@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Évaluation de fin de formation • Laura Ballo Formation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+:root{--black:#1A1A1A;--white:#FFF;--light-beige:#FBF4EE;--warm-beige:#E8DDD6;--warm-gray:#6B6560;
+--text-dark:#2C2C2C;--accent:#C4A574;--accent-dark:#A68B5B;--success:#7BA05B;--alert:#B8534A;
+--font-h:'DM Serif Display',Georgia,serif;--font-b:'DM Sans',system-ui,sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-b);background:var(--light-beige);color:var(--text-dark);line-height:1.6;min-height:100vh}
+.hero{background:linear-gradient(135deg,var(--black),#2a2a2a);color:var(--white);padding:36px 20px 28px}
+.hero-inner{max-width:680px;margin:0 auto}
+.hero .badge{display:inline-block;background:var(--accent);color:var(--black);font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;padding:5px 12px;border-radius:4px;margin-bottom:14px}
+.hero h1{font-family:var(--font-h);font-weight:400;font-size:1.6rem;line-height:1.25}
+.hero p{color:var(--warm-beige);margin-top:8px;font-size:.92rem}
+.wrap{max-width:680px;margin:0 auto;padding:26px 20px 70px}
+.qcard{background:var(--white);border:1px solid var(--warm-beige);border-radius:14px;padding:20px 22px;margin-bottom:16px}
+.qnum{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--accent-dark);margin-bottom:6px}
+.qtext{font-weight:600;font-size:.98rem;margin-bottom:12px}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{display:flex;align-items:flex-start;gap:12px;border:2px solid transparent;background:var(--light-beige);
+border-radius:10px;padding:11px 14px;cursor:pointer;font-size:.9rem;transition:.25s}
+.opt:hover{border-color:var(--warm-beige)}
+.opt.selected{border-color:var(--accent);background:var(--white)}
+.opt input{accent-color:var(--accent-dark);margin-top:3px}
+.submit{width:100%;padding:15px;border:none;border-radius:10px;background:var(--black);color:#fff;
+font-family:var(--font-b);font-size:.95rem;font-weight:600;cursor:pointer;transition:.25s}
+.submit:hover{background:var(--accent-dark)}
+.submit[disabled]{opacity:.5;cursor:not-allowed}
+.legal{font-size:.72rem;color:var(--warm-gray);margin-top:12px;text-align:center;line-height:1.5}
+.err{background:#F9E9E7;border:1px solid #ecc7c2;color:#8a3a32;border-radius:10px;padding:12px 16px;font-size:.85rem;margin-bottom:14px;display:none}
+.msg{max-width:560px;margin:16vh auto;text-align:center;padding:0 20px}
+.msg .ico{font-size:2.2rem;margin-bottom:10px}
+.msg h1{font-family:var(--font-h);font-weight:400;font-size:1.5rem;margin-bottom:8px}
+.msg p{color:var(--warm-gray)}
+/* Résultat */
+.score-card{background:var(--black);color:#fff;border-radius:16px;padding:30px;text-align:center;margin-bottom:24px}
+.score-num{font-family:var(--font-h);font-size:3rem;color:var(--accent);line-height:1.1}
+.score-sub{opacity:.75;font-size:.9rem}
+.rescard{background:var(--white);border:1px solid var(--warm-beige);border-radius:12px;padding:16px 18px;margin-bottom:10px}
+.rescard.ok{border-left:4px solid var(--success)}
+.rescard.ko{border-left:4px solid var(--alert)}
+.rescard .q{font-weight:600;font-size:.9rem;margin-bottom:6px}
+.rescard .a{font-size:.84rem;color:var(--warm-gray)}
+.rescard .a b{color:var(--text-dark)}
+</style>
+</head>
+<body>
+
+<div class="msg" id="loading"><h1>Chargement…</h1><p>Préparation de votre évaluation.</p></div>
+<div class="msg" id="doneBox" style="display:none"><div class="ico">🌿</div><h1>Merci !</h1>
+  <p>Votre évaluation a déjà été transmise. Votre score est enregistré.</p></div>
+<div class="msg" id="errorBox" style="display:none"><div class="ico">🔒</div><h1>Lien invalide</h1>
+  <p id="errorText">Ce lien n'est pas reconnu. Contactez votre formatrice : contact@lauraballo.com</p></div>
+
+<div id="app" style="display:none">
+  <header class="hero"><div class="hero-inner">
+    <span class="badge">Fin de formation</span>
+    <h1>Évaluation des acquis</h1>
+    <p id="intro">—</p>
+  </div></header>
+  <main class="wrap">
+    <div class="err" id="formErr"></div>
+    <form id="form" novalidate>
+      <div id="questions"></div>
+      <button class="submit" type="submit" id="btnSubmit">Valider mes réponses</button>
+      <p class="legal">Évaluation de l'atteinte des objectifs pédagogiques (référentiel Qualiopi, indicateur 11).
+      Vos réponses sont corrigées automatiquement et le détail vous est présenté immédiatement.</p>
+    </form>
+  </main>
+</div>
+
+<div id="result" style="display:none">
+  <header class="hero"><div class="hero-inner">
+    <span class="badge">Résultat</span>
+    <h1>Votre évaluation est enregistrée</h1>
+    <p id="resIntro">—</p>
+  </div></header>
+  <main class="wrap">
+    <div class="score-card">
+      <div class="score-num" id="scorePct">—</div>
+      <div class="score-sub" id="scoreDetail">—</div>
+    </div>
+    <div id="corrections"></div>
+    <p class="legal">Merci ! Pensez également à compléter le questionnaire de satisfaction depuis votre espace stagiaire.</p>
+  </main>
+</div>
+
+<script>
+const API = "/api/evaluation";
+const token = new URLSearchParams(location.search).get("token");
+const $ = id => document.getElementById(id);
+let QUESTIONS = [];
+
+function show(id){ ["loading","doneBox","errorBox","app","result"].forEach(x => $(x).style.display = x===id ? "block" : "none"); }
+
+document.addEventListener("change", e => {
+  if (e.target.matches('input[type="radio"]')) {
+    e.target.closest(".opts").querySelectorAll(".opt").forEach(o => o.classList.remove("selected"));
+    e.target.closest(".opt").classList.add("selected");
+  }
+});
+
+async function load(){
+  if(!token) return show("errorBox");
+  try{
+    const r = await fetch(`${API}?token=${encodeURIComponent(token)}`);
+    const d = await r.json();
+    if(!r.ok){ $("errorText").textContent = d.error || $("errorText").textContent; return show("errorBox"); }
+    if(d.dejaComplete) return show("doneBox");
+    QUESTIONS = d.questions;
+    $("intro").textContent = `${d.participant.nom}, ${QUESTIONS.length} questions pour valider vos acquis de « ${d.formation} ». Prenez votre temps, une seule réponse par question.`;
+    $("questions").innerHTML = QUESTIONS.map((q, i) => `
+      <div class="qcard" data-qid="${q.id}">
+        <div class="qnum">Question ${i + 1} / ${QUESTIONS.length}</div>
+        <div class="qtext">${q.question}</div>
+        <div class="opts">
+          ${q.options.map(o => `
+            <label class="opt"><input type="radio" name="q_${q.id}" value="${o.replace(/"/g, "&quot;")}"> <span>${o}</span></label>
+          `).join("")}
+        </div>
+      </div>`).join("");
+    show("app");
+  }catch(e){ $("errorText").textContent = "Erreur de connexion. Réessayez dans un instant."; show("errorBox"); }
+}
+
+$("form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const reponses = {};
+  let missing = 0;
+  QUESTIONS.forEach(q => {
+    const checked = document.querySelector(`input[name="q_${q.id}"]:checked`);
+    if (checked) reponses[q.id] = checked.value; else missing++;
+  });
+  const err = $("formErr");
+  if (missing > 0) {
+    err.textContent = `Il reste ${missing} question${missing > 1 ? "s" : ""} sans réponse.`;
+    err.style.display = "block"; window.scrollTo({top: 0, behavior: "smooth"}); return;
+  }
+  err.style.display = "none";
+  const btn = $("btnSubmit"); btn.disabled = true; btn.textContent = "Correction en cours…";
+  try{
+    const r = await fetch(API, {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ token, reponses }),
+    });
+    const d = await r.json();
+    if(!r.ok) throw new Error(d.error || "Erreur");
+    $("scorePct").textContent = `${d.percent} %`;
+    $("scoreDetail").textContent = `${d.score} bonne${d.score > 1 ? "s" : ""} réponse${d.score > 1 ? "s" : ""} sur ${d.totalPoints}`;
+    $("resIntro").textContent = d.percent >= 70
+      ? "Bravo, les objectifs pédagogiques sont atteints. Voici le détail de vos réponses :"
+      : "Merci pour vos réponses. Voici les corrections — n'hésitez pas à en discuter avec votre formatrice :";
+    $("corrections").innerHTML = d.details.map((c, i) => `
+      <div class="rescard ${c.correct ? "ok" : "ko"}">
+        <div class="q">${c.correct ? "✅" : "❌"} Q${i + 1} — ${c.question}</div>
+        <div class="a">Votre réponse : <b>${c.choix || "(sans réponse)"}</b>${c.correct ? "" : `<br>Bonne réponse : <b>${c.bonneReponse}</b>`}</div>
+      </div>`).join("");
+    show("result");
+    window.scrollTo({top: 0});
+  }catch(ex){
+    err.textContent = ex.message; err.style.display = "block";
+    btn.disabled = false; btn.textContent = "Valider mes réponses";
+    window.scrollTo({top: 0, behavior: "smooth"});
+  }
+});
+
+load();
+</script>
+</body>
+</html>
