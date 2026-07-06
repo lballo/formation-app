@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Pilotage formations • Laura Ballo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#1A1A1A; --white:#FFF; --light-beige:#FBF4EE; --warm-beige:#E8DDD6;
+  --warm-gray:#6B6560; --text-dark:#2C2C2C; --muted:#8A8A8A;
+  --accent:#C4A574; --accent-dark:#A68B5B; --success:#7BA05B; --alert:#B8534A;
+  --font-h:'DM Serif Display',Georgia,serif; --font-b:'DM Sans',system-ui,sans-serif;
+  --shadow:0 8px 24px rgba(0,0,0,.07);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-b);background:var(--light-beige);color:var(--text-dark);line-height:1.55}
+header{background:var(--black);color:var(--white);padding:16px 28px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;position:sticky;top:0;z-index:20}
+header h1{font-family:var(--font-h);font-weight:400;font-size:1.25rem}
+header .badge{background:var(--accent);color:var(--black);font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:4px 10px;border-radius:4px}
+.spacer{flex:1}
+.viewswitch{display:flex;background:rgba(255,255,255,.1);border-radius:8px;overflow:hidden}
+.viewswitch button{border:none;background:transparent;color:rgba(255,255,255,.6);padding:8px 18px;font-family:var(--font-b);font-size:.82rem;font-weight:600;cursor:pointer}
+.viewswitch button.on{background:var(--accent);color:var(--black)}
+.monthnav{display:flex;align-items:center;gap:10px;color:var(--white);font-size:.9rem}
+.monthnav button{border:1px solid rgba(255,255,255,.25);background:transparent;color:var(--white);width:30px;height:30px;border-radius:6px;cursor:pointer;font-size:.9rem}
+.monthnav strong{min-width:150px;text-align:center;font-weight:600;text-transform:capitalize}
+main{max-width:1280px;margin:0 auto;padding:26px 24px 80px}
+.empty{background:var(--white);border:1px dashed var(--warm-beige);border-radius:14px;padding:44px;text-align:center;color:var(--muted)}
+
+/* ═══ Vue LISTE ═══ */
+.session{background:var(--white);border-radius:16px;box-shadow:var(--shadow);border:1px solid var(--warm-beige);margin-bottom:26px;overflow:hidden}
+.session-head{background:linear-gradient(135deg,var(--black),#2b2b2b);color:var(--white);padding:15px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.chip{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;padding:4px 10px;border-radius:4px}
+.chip.INTER{background:#7BA05B;color:#fff}.chip.INTRA{background:#C4A574;color:#1A1A1A}.chip.Individuel{background:#8a7bb0;color:#fff}
+.chip.st-Planifiée{background:rgba(255,255,255,.15);color:#fff}.chip.st-Encours{background:#e9c46a;color:#1A1A1A}
+.chip.st-Terminée{background:#4c6e35;color:#fff}.chip.st-Annulée{background:var(--alert);color:#fff}
+.session-head h2{font-family:var(--font-h);font-weight:400;font-size:1.15rem;flex:1;min-width:220px}
+.session-head a{color:var(--accent);font-size:.8rem;text-decoration:none}
+.session-body{display:grid;grid-template-columns:280px 1fr 250px;gap:0}
+.col{padding:18px 20px}
+.col+.col{border-left:1px solid var(--warm-beige)}
+.col h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--accent-dark);margin-bottom:12px}
+.kv{display:flex;gap:8px;font-size:.86rem;padding:4px 0}
+.kv b{min-width:78px;font-weight:600;color:var(--warm-gray);font-size:.8rem}
+/* participants */
+.pcard{border:1px solid var(--warm-beige);border-radius:10px;padding:10px 12px;margin-bottom:10px}
+.pcard .top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pcard .name{font-weight:600;font-size:.92rem;flex:1;min-width:120px}
+.copy{border:1px solid var(--warm-beige);background:var(--light-beige);border-radius:6px;font-size:.72rem;padding:5px 10px;cursor:pointer;font-family:var(--font-b);color:var(--text-dark)}
+.copy:hover{border-color:var(--accent)}
+.stats{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.stat{font-size:.7rem;padding:4px 9px;border-radius:14px;border:1px solid var(--warm-beige);color:var(--warm-gray);background:var(--light-beige)}
+.stat.ok{background:#EDF3E6;border-color:#cfe0bd;color:#4c6e35}
+.stat.part{background:#FBEED9;border-color:#ecd7ae;color:#8a6b2f}
+.rlink{display:flex;align-items:center;gap:8px;font-size:.85rem;padding:7px 0;border-bottom:1px solid var(--warm-beige);color:var(--text-dark);text-decoration:none}
+.rlink:last-child{border-bottom:none}
+.rlink:hover{color:var(--accent-dark)}
+.rlink .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0}
+.rlink.off{color:var(--muted);pointer-events:none}
+.rlink.off .dot{background:var(--warm-beige)}
+
+/* ═══ Vue MOIS ═══ */
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal .dow{background:#bfbcb8;color:#fff;font-size:.78rem;font-weight:700;text-align:center;padding:7px;border-radius:6px;text-transform:capitalize}
+.cell{background:var(--white);border:1px solid var(--warm-beige);border-radius:8px;min-height:112px;padding:6px;font-size:.75rem}
+.cell.out{background:transparent;border-style:dashed;opacity:.5}
+.cell .dnum{color:var(--muted);font-size:.72rem;margin-bottom:4px}
+.cell.today .dnum{color:var(--black);font-weight:700}
+.cell.today{border-color:var(--accent)}
+.evt{border-radius:5px;padding:4px 7px;margin-bottom:4px;cursor:pointer;color:#fff;line-height:1.3}
+.evt .t{font-weight:600;display:block}
+.evt .l{opacity:.85;font-size:.68rem}
+.evt.INTER{background:#e08a2e}.evt.INTRA{background:#7BA05B}.evt.Individuel{background:#8a7bb0}
+.evt.st-Annulée{background:#b8b3ae;text-decoration:line-through}
+/* Auth */
+.gate{max-width:380px;margin:14vh auto;background:var(--white);border-radius:16px;box-shadow:var(--shadow);padding:34px;text-align:center}
+.gate h1{font-family:var(--font-h);font-weight:400;font-size:1.4rem;margin-bottom:6px}
+.gate p{font-size:.85rem;color:var(--muted);margin-bottom:18px}
+.gate input{width:100%;padding:12px 14px;border:1px solid var(--warm-beige);border-radius:8px;font-family:var(--font-b);font-size:.9rem;margin-bottom:12px;background:var(--light-beige)}
+.gate button{width:100%;padding:12px;border:none;border-radius:8px;background:var(--black);color:#fff;font-weight:600;font-family:var(--font-b);cursor:pointer}
+.gate button:hover{background:var(--accent-dark)}
+.gate .err{color:var(--alert);font-size:.8rem;margin-top:10px;display:none}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--black);color:#fff;padding:11px 22px;border-radius:30px;font-size:.85rem;opacity:0;transition:.3s;pointer-events:none;z-index:60}
+.toast.show{opacity:1}
+@media(max-width:960px){.session-body{grid-template-columns:1fr}.col+.col{border-left:none;border-top:1px solid var(--warm-beige)}}
+@media(max-width:640px){.cell{min-height:70px}header{padding:12px 16px}}
+</style>
+</head>
+<body>
+
+<div id="gate" class="gate">
+  <h1>Pilotage formations</h1>
+  <p>Espace formatrice — entrez votre clé d'accès.</p>
+  <input type="password" id="keyInput" placeholder="Clé d'accès" autocomplete="current-password">
+  <button id="keyBtn">Entrer</button>
+  <div class="err" id="keyErr">Clé refusée. Vérifiez la valeur de DASHBOARD_SECRET.</div>
+</div>
+
+<div id="shell" style="display:none">
+<header>
+  <h1>Laura Ballo</h1><span class="badge">Organisme de formation · Qualiopi</span>
+  <div class="spacer"></div>
+  <div class="monthnav" id="monthnav" style="display:none">
+    <button id="prevM" aria-label="Mois précédent">‹</button>
+    <strong id="monthLabel"></strong>
+    <button id="nextM" aria-label="Mois suivant">›</button>
+  </div>
+  <div class="viewswitch">
+    <button id="vList" class="on">Liste</button>
+    <button id="vMonth">Mois</button>
+  </div>
+</header>
+<main>
+  <div id="listView"></div>
+  <div id="monthView" style="display:none"></div>
+</main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+let DATA = null, view = "list", cursor = new Date();
+
+const fmtRange = (a,b,j)=>{
+  if(!a) return "Dates à définir";
+  const o={day:"numeric",month:"long",year:"numeric"};
+  const d1=new Date(a+"T12:00").toLocaleDateString("fr-FR",o);
+  if(b && b!==a) return `Du ${d1} au ${new Date(b+"T12:00").toLocaleDateString("fr-FR",o)}`;
+  if(j>1){const e=new Date(a+"T12:00");let add=j-1;while(add>0){e.setDate(e.getDate()+1);const w=e.getDay();if(w!==0&&w!==6)add--;}
+    return `Du ${d1} au ${e.toLocaleDateString("fr-FR",o)}`;}
+  return d1;
+};
+const toast = m => { const t=$("toast"); t.textContent=m; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2400); };
+const copy = (txt,label)=>navigator.clipboard.writeText(txt).then(()=>toast(label+" copié ✓"));
+
+/* ── Auth ── */
+async function tryKey(key){
+  const r = await fetch(`/api/dashboard?key=${encodeURIComponent(key)}`);
+  if(!r.ok){ $("keyErr").style.display="block"; localStorage.removeItem("dashKey"); return; }
+  DATA = await r.json();
+  localStorage.setItem("dashKey", key);
+  $("gate").style.display="none"; $("shell").style.display="block";
+  renderList(); renderMonth();
+}
+$("keyBtn").onclick = ()=>tryKey($("keyInput").value.trim());
+$("keyInput").addEventListener("keydown",e=>{ if(e.key==="Enter") tryKey($("keyInput").value.trim()); });
+const saved = localStorage.getItem("dashKey"); if(saved) tryKey(saved);
+
+/* ── Switch vues ── */
+function setView(v){
+  view=v;
+  $("vList").classList.toggle("on",v==="list"); $("vMonth").classList.toggle("on",v==="month");
+  $("listView").style.display = v==="list"?"block":"none";
+  $("monthView").style.display = v==="month"?"block":"none";
+  $("monthnav").style.display = v==="month"?"flex":"none";
+}
+$("vList").onclick=()=>setView("list"); $("vMonth").onclick=()=>setView("month");
+$("prevM").onclick=()=>{cursor.setMonth(cursor.getMonth()-1);renderMonth();};
+$("nextM").onclick=()=>{cursor.setMonth(cursor.getMonth()+1);renderMonth();};
+
+/* ── Vue LISTE ── */
+function statChip(label, ok){ return `<span class="stat ${ok?"ok":""}">${ok?"✓":"·"} ${label}</span>`; }
+
+function renderList(){
+  const box = $("listView"); box.innerHTML="";
+  const sessions = [...DATA.sessions].sort((a,b)=>(a.dateDebut||"9999").localeCompare(b.dateDebut||"9999"));
+  if(!sessions.length){ box.innerHTML=`<div class="empty">Aucune session. Créez une session dans Notion (📅 Sessions) : elle apparaîtra ici.</div>`; return; }
+  const base = location.origin;
+
+  for(const s of sessions){
+    const f = s.formation || {};
+    const parts = s.participants.map(p=>{
+      const em = `${p.emargementsSignes}/${s.nbAttendus}`;
+      const emClass = p.emargementsSignes>=s.nbAttendus ? "ok" : (p.emargementsSignes>0?"part":"");
+      return `<div class="pcard">
+        <div class="top"><span class="name">${p.nom||"—"}</span>
+          <button class="copy" data-c="${base}/espace/?token=${p.id}" data-l="Lien espace stagiaire">🔑 Copier le lien espace stagiaire</button>
+        </div>
+        <div class="stats">
+          ${statChip("Positionnement", p.positionnement)}
+          <span class="stat ${emClass}">✍️ Émargement ${em}</span>
+          ${statChip("Évaluation fin", p.evaluation)}
+          ${statChip("Satisfaction", p.satisfaction)}
+        </div>
+      </div>`;
+    }).join("") || `<div class="empty" style="padding:18px">Aucun participant inscrit. Ajoutez-les dans Notion (👥 Participants) en les reliant à la session.</div>`;
+
+    const rlink = (label,url)=>`<a class="rlink ${url?"":"off"}" href="${url||"#"}" target="_blank" rel="noopener"><span class="dot"></span>${label}${url?"":" — à configurer"}</a>`;
+
+    box.insertAdjacentHTML("beforeend", `<article class="session">
+      <div class="session-head">
+        <span class="chip ${s.type||"INTER"}">${s.type||"—"}</span>
+        <span class="chip st-${(s.statut||"Planifiée").replace(/\s/g,"")}">${s.statut||"Planifiée"}</span>
+        <h2>${s.titre||"Session sans titre"}</h2>
+        <a href="${s.notionUrl}" target="_blank" rel="noopener">Ouvrir dans Notion ↗</a>
+      </div>
+      <div class="session-body">
+        <div class="col">
+          <h3>Infos pratiques</h3>
+          ${s.code?`<div class="kv"><b>Code</b><span>${s.code}</span></div>`:""}
+          <div class="kv"><b>Dates</b><span>${fmtRange(s.dateDebut,s.dateFin,s.jours)}</span></div>
+          <div class="kv"><b>Durée</b><span>${s.jours} jour${s.jours>1?"s":""} · ${s.nbAttendus} émargements</span></div>
+          ${s.horaires?`<div class="kv"><b>Horaires</b><span>${s.horaires}</span></div>`:""}
+          ${s.lieu?`<div class="kv"><b>Lieu</b><span>${s.lieu}</span></div>`:""}
+          ${f.nom?`<div class="kv"><b>Formation</b><span>${f.nom}${f.code?` (${f.code})`:""}</span></div>`:""}
+        </div>
+        <div class="col">
+          <h3>${s.participants.length} participant${s.participants.length>1?"s":""}</h3>
+          ${parts}
+        </div>
+        <div class="col">
+          <h3>Ressources & formulaires</h3>
+          ${rlink("Formulaire de positionnement", f.formPositionnement)}
+          ${rlink("Formulaire d'évaluation fin", f.formEvaluation)}
+          ${rlink("Formulaire de satisfaction", f.formSatisfaction)}
+        </div>
+      </div>
+    </article>`);
+  }
+  box.querySelectorAll(".copy").forEach(b=>b.onclick=()=>copy(b.dataset.c, b.dataset.l));
+}
+
+/* ── Vue MOIS ── */
+function sessionDays(s){
+  // Jours calendaires couverts par la session (jours ouvrés à partir du début)
+  if(!s.dateDebut) return [];
+  const out=[]; const d=new Date(s.dateDebut+"T12:00");
+  let left=s.jours||1;
+  while(left>0){ const w=d.getDay(); if(w!==0&&w!==6){ out.push(d.toISOString().slice(0,10)); left--; } d.setDate(d.getDate()+1); }
+  return out;
+}
+
+function renderMonth(){
+  const y=cursor.getFullYear(), m=cursor.getMonth();
+  $("monthLabel").textContent = cursor.toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
+  const box=$("monthView"); box.innerHTML="";
+  const cal=document.createElement("div"); cal.className="cal";
+  ["lundi","mardi","mercredi","jeudi","vendredi","samedi","dimanche"].forEach(d=>{
+    cal.insertAdjacentHTML("beforeend",`<div class="dow">${d}</div>`);
+  });
+
+  // index événements par date
+  const byDay={};
+  for(const s of (DATA?.sessions||[])){
+    for(const day of sessionDays(s)) (byDay[day]=byDay[day]||[]).push(s);
+  }
+
+  const first=new Date(y,m,1);
+  const offset=(first.getDay()+6)%7; // lundi=0
+  const start=new Date(y,m,1-offset);
+  const todayISO=new Date().toISOString().slice(0,10);
+  for(let i=0;i<42;i++){
+    const d=new Date(start); d.setDate(start.getDate()+i);
+    const iso=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+    const out=d.getMonth()!==m;
+    const evts=(byDay[iso]||[]).map(s=>
+      `<div class="evt ${s.type||"INTER"} st-${(s.statut||"").replace(/\s/g,"")}" data-id="${s.id}">
+         <span class="t">${s.titre||"Session"}</span><span class="l">${s.lieu||s.type||""}</span></div>`).join("");
+    cal.insertAdjacentHTML("beforeend",
+      `<div class="cell ${out?"out":""} ${iso===todayISO?"today":""}"><div class="dnum">${d.getDate()}</div>${evts}</div>`);
+  }
+  box.appendChild(cal);
+  box.querySelectorAll(".evt").forEach(e=>e.onclick=()=>{
+    setView("list");
+    document.querySelectorAll(".session").forEach(el=>{
+      if(el.querySelector(`a[href*="${e.dataset.id.replace(/-/g,"")}"]`)) el.scrollIntoView({behavior:"smooth"});
+    });
+  });
+}
+</script>
+</body>
+</html>

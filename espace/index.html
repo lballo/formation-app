@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Mon espace formation • Laura Ballo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+:root{--black:#1A1A1A;--white:#FFF;--light-beige:#FBF4EE;--warm-beige:#E8DDD6;--warm-gray:#6B6560;
+--text-dark:#2C2C2C;--accent:#C4A574;--accent-dark:#A68B5B;--success:#7BA05B;
+--font-h:'DM Serif Display',Georgia,serif;--font-b:'DM Sans',system-ui,sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-b);background:var(--light-beige);color:var(--text-dark);line-height:1.6;min-height:100vh}
+.hero{background:linear-gradient(135deg,var(--black),#2a2a2a);color:var(--white);padding:38px 20px 30px}
+.hero-inner{max-width:720px;margin:0 auto}
+.hero .badge{display:inline-block;background:var(--accent);color:var(--black);font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;padding:5px 12px;border-radius:4px;margin-bottom:14px}
+.hero h1{font-family:var(--font-h);font-weight:400;font-size:1.8rem;line-height:1.2}
+.hero .sub{color:var(--warm-beige);margin-top:6px;font-size:1rem}
+.hero .meta{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.12);font-size:.85rem;color:rgba(255,255,255,.8)}
+.wrap{max-width:720px;margin:0 auto;padding:26px 20px 70px}
+.progress{background:var(--white);border:1px solid var(--warm-beige);border-radius:12px;padding:16px 20px;margin-bottom:26px;display:flex;align-items:center;gap:14px}
+.progress .bar{flex:1;height:8px;background:var(--warm-beige);border-radius:4px;overflow:hidden}
+.progress .fill{height:100%;background:var(--accent);border-radius:4px;transition:width .4s ease}
+.progress .label{font-size:.85rem;font-weight:600;white-space:nowrap}
+h2.sec{font-family:var(--font-h);font-weight:400;font-size:1.25rem;margin:26px 4px 12px;color:var(--black)}
+.step{background:var(--white);border:1px solid var(--warm-beige);border-radius:14px;padding:18px 20px;margin-bottom:12px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.step .ico{width:44px;height:44px;border-radius:12px;background:var(--light-beige);display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0}
+.step .info{flex:1;min-width:200px}
+.step .t{font-weight:600;font-size:.97rem}
+.step .d{font-size:.8rem;color:var(--warm-gray)}
+.chip{font-size:.75rem;padding:6px 12px;border-radius:20px;white-space:nowrap}
+.chip.done{background:#EDF3E6;color:#4c6e35;border:1px solid #cfe0bd}
+.chip.todo{background:var(--light-beige);color:var(--warm-gray);border:1px dashed var(--warm-beige)}
+.chip.part{background:#FBEED9;color:#8a6b2f;border:1px solid #ecd7ae}
+.go{display:inline-block;font-size:.85rem;font-weight:600;text-decoration:none;background:var(--black);color:#fff;padding:10px 18px;border-radius:8px;transition:.25s}
+.go:hover{background:var(--accent-dark)}
+.go.soft{background:transparent;color:var(--text-dark);border:1px solid var(--warm-beige)}
+.go.soft:hover{border-color:var(--accent);color:var(--accent-dark)}
+.res{background:var(--white);border:1px solid var(--warm-beige);border-radius:14px;overflow:hidden}
+.res a{display:flex;align-items:center;gap:14px;padding:15px 20px;text-decoration:none;color:var(--text-dark);border-bottom:1px solid var(--warm-beige);transition:.2s}
+.res a:last-child{border-bottom:none}
+.res a:hover{background:var(--light-beige)}
+.res .ric{font-size:1.15rem}
+.res .rn{font-weight:600;font-size:.92rem}
+.res .rs{font-size:.78rem;color:var(--warm-gray)}
+.res .dl{margin-left:auto;color:var(--accent-dark);font-size:.8rem;white-space:nowrap}
+.res .empty{padding:22px;text-align:center;color:var(--warm-gray);font-size:.88rem}
+footer{max-width:720px;margin:0 auto;padding:0 20px 50px;font-size:.75rem;color:var(--warm-gray);text-align:center;line-height:1.6}
+footer a{color:var(--accent-dark)}
+.msg{max-width:560px;margin:16vh auto;text-align:center;padding:0 20px}
+.msg .ico{font-size:2.2rem;margin-bottom:10px}
+.msg h1{font-family:var(--font-h);font-weight:400;font-size:1.5rem;margin-bottom:8px}
+.msg p{color:var(--warm-gray)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="msg" id="loading"><h1>Chargement…</h1><p>Ouverture de votre espace.</p></div>
+<div class="msg" id="errorBox" style="display:none"><div class="ico">🔒</div><h1>Lien invalide</h1>
+  <p>Ce lien d'accès n'est pas reconnu. Contactez votre formatrice : contact@lauraballo.com</p></div>
+
+<div id="app" style="display:none">
+  <header class="hero"><div class="hero-inner">
+    <span class="badge">Votre espace formation</span>
+    <h1 id="hello">Bonjour</h1>
+    <div class="sub" id="ftitle">—</div>
+    <div class="meta"><span id="mDates"></span><span id="mHoraires"></span><span id="mLieu"></span></div>
+  </div></header>
+
+  <main class="wrap">
+    <div class="progress">
+      <div class="bar"><div class="fill" id="fill" style="width:0%"></div></div>
+      <div class="label" id="progLabel">Parcours 0 %</div>
+    </div>
+
+    <h2 class="sec">Votre parcours</h2>
+    <div id="steps"></div>
+
+    <h2 class="sec">Vos ressources</h2>
+    <div class="res" id="ressources"></div>
+  </main>
+
+  <footer>
+    Formation certifiée Qualiopi — Laura Ballo Coaching.<br>
+    Une question, un besoin d'aménagement ou une réclamation : <a href="mailto:contact@lauraballo.com">contact@lauraballo.com</a> (réponse sous 48 h).<br>
+    Vos données sont traitées conformément au RGPD, aux seules fins de gestion et de traçabilité de votre formation.
+  </footer>
+</div>
+
+<script>
+const token = new URLSearchParams(location.search).get("token");
+const $ = id => document.getElementById(id);
+const fmtDate = iso => iso ? new Date(iso + "T12:00:00").toLocaleDateString("fr-FR", {weekday:"long", day:"numeric", month:"long", year:"numeric"}) : "";
+
+function show(id){ ["loading","errorBox","app"].forEach(x => $(x).style.display = x===id ? "block" : "none"); }
+
+function step({ico, titre, desc, chip, chipClass, cta, href, external}){
+  const btn = href
+    ? `<a class="go ${chip==="Fait" ? "soft" : ""}" href="${href}" ${external ? 'target="_blank" rel="noopener"' : ""}>${cta}</a>`
+    : "";
+  return `<div class="step">
+    <div class="ico">${ico}</div>
+    <div class="info"><div class="t">${titre}</div><div class="d">${desc}</div></div>
+    <span class="chip ${chipClass}">${chip}</span>
+    ${btn}
+  </div>`;
+}
+
+async function load(){
+  if(!token) return show("errorBox");
+  let d;
+  try{
+    const r = await fetch(`/api/espace?token=${encodeURIComponent(token)}`);
+    d = await r.json();
+    if(!r.ok) return show("errorBox");
+  }catch(e){ return show("errorBox"); }
+
+  const s = d.session || {}, f = d.formation || {}, st = d.statuts;
+  const prenom = d.participant.prenom || d.participant.nom.split(" ")[0] || "";
+  $("hello").textContent = `Bonjour ${prenom}`;
+  $("ftitle").textContent = f.nom || s.titre || "Votre formation";
+  $("mDates").textContent = s.dateDebut ? `📅 ${fmtDate(s.dateDebut)}${s.jours > 1 ? ` • ${s.jours} jours` : ""}` : "";
+  $("mHoraires").textContent = s.horaires ? `🕘 ${s.horaires}` : "";
+  $("mLieu").textContent = s.lieu ? `📍 ${s.lieu}` : "";
+
+  // ── Parcours ──
+  const em = st.emargements;
+  const emDone = em.attendus > 0 && em.signes >= em.attendus;
+  const items = [
+    step({
+      ico: "📋", titre: "Questionnaire de positionnement",
+      desc: "Avant la formation — 5 min pour adapter la session à votre profil",
+      chip: st.positionnement ? "Fait" : "À faire",
+      chipClass: st.positionnement ? "done" : "todo",
+      cta: st.positionnement ? "Revoir" : "Compléter",
+      href: st.positionnement ? null : `/positionnement/?token=${token}`,
+    }),
+    step({
+      ico: "✍️", titre: "Émargement",
+      desc: "Pendant la formation — une signature par demi-journée (matin et après-midi)",
+      chip: `${em.signes}/${em.attendus} signés`,
+      chipClass: emDone ? "done" : (em.signes > 0 ? "part" : "todo"),
+      cta: emDone ? "Consulter" : "Signer",
+      href: `/emargement/?token=${token}`,
+    }),
+    step({
+      ico: "📊", titre: "Évaluation de fin de formation",
+      desc: "En fin de formation — vérification des acquis",
+      chip: st.evaluation ? "Fait" : "À faire",
+      chipClass: st.evaluation ? "done" : "todo",
+      cta: "Compléter",
+      href: (!st.evaluation && f.formEvaluation) ? f.formEvaluation : null,
+      external: true,
+    }),
+    step({
+      ico: "😊", titre: "Questionnaire de satisfaction",
+      desc: "En fin de formation — votre avis à chaud",
+      chip: st.satisfaction ? "Fait" : "À faire",
+      chipClass: st.satisfaction ? "done" : "todo",
+      cta: "Compléter",
+      href: st.satisfaction ? null : `/satisfaction-formation?token=${token}`,
+    }),
+    step({
+      ico: "❄️", titre: "Évaluation à froid",
+      desc: "Environ 3 mois après — ce qui a réellement changé dans votre pratique",
+      chip: st.evalFroid ? "Fait" : "À faire",
+      chipClass: st.evalFroid ? "done" : "todo",
+      cta: "Compléter",
+      href: st.evalFroid ? null : `/evaluation-froid/?token=${token}`,
+    }),
+  ];
+  $("steps").innerHTML = items.join("");
+
+  // ── Progression globale ──
+  const doneCount = [st.positionnement, emDone, st.evaluation, st.satisfaction, st.evalFroid].filter(Boolean).length;
+  const pct = Math.round(doneCount / 5 * 100);
+  $("fill").style.width = pct + "%";
+  $("progLabel").textContent = `Parcours ${pct} %`;
+
+  // ── Ressources ──
+  const box = $("ressources");
+  if(!d.ressources.length){
+    box.innerHTML = `<div class="empty">Vos supports de formation apparaîtront ici dès leur mise en ligne.</div>`;
+  } else {
+    box.innerHTML = d.ressources.map(r =>
+      `<a href="${r.url}" target="_blank" rel="noopener">
+        <span class="ric">📄</span>
+        <span><span class="rn">${r.nom}</span><br><span class="rs">${r.source}</span></span>
+        <span class="dl">Télécharger ↓</span>
+      </a>`).join("");
+  }
+
+  show("app");
+}
+load();
+</script>
+</body>
+</html>

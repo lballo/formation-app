@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Émargement • Laura Ballo Formation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#1A1A1A; --white:#FFF; --light-beige:#FBF4EE; --warm-beige:#E8DDD6;
+  --warm-gray:#6B6560; --text-dark:#2C2C2C; --accent:#C4A574; --accent-dark:#A68B5B;
+  --success:#7BA05B; --font-h:'DM Serif Display',Georgia,serif; --font-b:'DM Sans',system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-b);background:var(--light-beige);color:var(--text-dark);line-height:1.6;min-height:100vh}
+.hero{background:linear-gradient(135deg,var(--black) 0%,#2a2a2a 100%);color:var(--white);padding:36px 20px 28px}
+.hero-inner{max-width:680px;margin:0 auto}
+.hero .badge{display:inline-block;background:var(--accent);color:var(--black);font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;padding:5px 12px;border-radius:4px;margin-bottom:14px}
+.hero h1{font-family:var(--font-h);font-weight:400;font-size:1.7rem;line-height:1.2}
+.hero .who{color:var(--warm-beige);margin-top:6px;font-size:.95rem}
+.hero .meta{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.12);font-size:.85rem;color:rgba(255,255,255,.8)}
+.wrap{max-width:680px;margin:0 auto;padding:24px 20px 60px}
+.progress{background:var(--white);border:1px solid var(--warm-beige);border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px}
+.progress .bar{flex:1;height:8px;background:var(--warm-beige);border-radius:4px;overflow:hidden}
+.progress .fill{height:100%;background:var(--accent);border-radius:4px;transition:width .4s ease}
+.progress .label{font-size:.85rem;font-weight:600;white-space:nowrap}
+.day-title{font-family:var(--font-h);font-size:1.15rem;margin:22px 4px 10px;color:var(--black)}
+.slot{background:var(--white);border:1px solid var(--warm-beige);border-radius:12px;padding:16px 18px;margin-bottom:12px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.slot .info{flex:1;min-width:180px}
+.slot .p{font-weight:600}
+.slot .d{font-size:.82rem;color:var(--warm-gray)}
+.slot .state{font-size:.82rem;padding:6px 12px;border-radius:20px;white-space:nowrap}
+.state.done{background:#EDF3E6;color:#4c6e35;border:1px solid #cfe0bd}
+.state.todo{background:var(--light-beige);color:var(--warm-gray);border:1px dashed var(--warm-beige)}
+.btn{font-family:var(--font-b);font-size:.86rem;font-weight:600;border:none;border-radius:8px;padding:11px 18px;cursor:pointer;transition:.25s}
+.btn.sign{background:var(--black);color:var(--white)}
+.btn.sign:hover{background:var(--accent-dark)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+/* Modal signature */
+.overlay{position:fixed;inset:0;background:rgba(26,26,26,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
+.overlay.open{display:flex}
+.modal{background:var(--white);border-radius:16px;max-width:460px;width:100%;padding:24px}
+.modal h2{font-family:var(--font-h);font-weight:400;font-size:1.25rem;margin-bottom:4px}
+.modal .sub{font-size:.85rem;color:var(--warm-gray);margin-bottom:14px}
+canvas{width:100%;height:170px;background:var(--light-beige);border:1px solid var(--warm-beige);border-radius:10px;touch-action:none;cursor:crosshair}
+.modal .row{display:flex;gap:10px;margin-top:14px}
+.btn.ghost{background:transparent;border:1px solid var(--warm-beige);color:var(--text-dark);flex:1}
+.btn.primary{background:var(--accent);color:var(--black);flex:2}
+.btn.primary:hover{background:var(--accent-dark)}
+.legal{font-size:.72rem;color:var(--warm-gray);margin-top:12px;line-height:1.5}
+.msg{max-width:680px;margin:60px auto;text-align:center;padding:0 20px}
+.msg h1{font-family:var(--font-h);font-weight:400;font-size:1.5rem;margin-bottom:8px}
+.msg p{color:var(--warm-gray)}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--black);color:var(--white);padding:12px 22px;border-radius:30px;font-size:.85rem;opacity:0;transition:.3s;pointer-events:none;z-index:60}
+.toast.show{opacity:1}
+.complete{background:var(--black);color:var(--white);border-radius:12px;padding:20px;margin-top:24px;text-align:center;display:none}
+.complete.show{display:block}
+.complete .check{color:var(--accent);font-size:1.6rem}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app" style="display:none">
+  <header class="hero"><div class="hero-inner">
+    <span class="badge">Émargement numérique</span>
+    <h1 id="sessionTitle">—</h1>
+    <div class="who" id="who">—</div>
+    <div class="meta">
+      <span id="mDates"></span><span id="mHoraires"></span><span id="mLieu"></span><span id="mType"></span>
+    </div>
+  </div></header>
+  <main class="wrap">
+    <div class="progress">
+      <div class="bar"><div class="fill" id="fill" style="width:0%"></div></div>
+      <div class="label" id="progLabel">0 / 0 signés</div>
+    </div>
+    <div id="slots"></div>
+    <div class="complete" id="complete">
+      <div class="check">✓</div>
+      <strong>Tous vos émargements sont signés.</strong>
+      <div style="font-size:.85rem;opacity:.75;margin-top:4px">Merci ! Votre assiduité est enregistrée pour la certification.</div>
+    </div>
+  </main>
+</div>
+
+<div class="msg" id="loading"><h1>Chargement…</h1><p>Vérification de votre lien d'accès.</p></div>
+<div class="msg" id="errorBox" style="display:none"><h1>Lien invalide</h1><p id="errorText">Ce lien d'émargement n'est pas reconnu. Contactez votre formatrice : contact@lauraballo.com</p></div>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true">
+  <div class="modal">
+    <h2 id="modalTitle">Signer</h2>
+    <div class="sub" id="modalSub">Signez dans le cadre ci-dessous, au doigt ou à la souris.</div>
+    <canvas id="pad" width="640" height="255"></canvas>
+    <div class="row">
+      <button class="btn ghost" id="btnClear" type="button">Effacer</button>
+      <button class="btn ghost" id="btnCancel" type="button">Annuler</button>
+      <button class="btn primary" id="btnConfirm" type="button">Valider ma signature</button>
+    </div>
+    <p class="legal">En signant, j'atteste sur l'honneur ma présence sur ce créneau de formation. Signature horodatée et conservée à des fins de traçabilité (Qualiopi) conformément au RGPD.</p>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const API = "/api/emargement";
+const qs = new URLSearchParams(location.search);
+const token = qs.get("token");
+let state = null, current = null, hasInk = false;
+
+const $ = id => document.getElementById(id);
+const fmtDate = iso => new Date(iso + "T12:00:00").toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
+const fmtTime = iso => new Date(iso).toLocaleString("fr-FR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
+const toast = m => { const t=$("toast"); t.textContent=m; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2600); };
+
+function fail(msg){ $("loading").style.display="none"; $("errorBox").style.display="block"; if(msg) $("errorText").textContent=msg; }
+
+async function load(){
+  if(!token) return fail();
+  try{
+    const r = await fetch(`${API}?token=${encodeURIComponent(token)}`);
+    const data = await r.json();
+    if(!r.ok) return fail(data.error);
+    state = data; render();
+  }catch(e){ fail("Erreur de connexion. Réessayez dans un instant."); }
+}
+
+function render(){
+  $("loading").style.display="none"; $("app").style.display="block";
+  const s = state.session, p = state.participant;
+  $("sessionTitle").textContent = s.titre || "Formation";
+  $("who").textContent = `Espace émargement de ${p.nom}`;
+  $("mDates").textContent = `📅 À partir du ${fmtDate(s.dateDebut)} • ${s.nbJours} jour${s.nbJours>1?"s":""}`;
+  $("mHoraires").textContent = s.horaires ? `🕘 ${s.horaires}` : "";
+  $("mLieu").textContent = s.lieu ? `📍 ${s.lieu}` : "";
+  $("mType").textContent = s.type ? `🏷 ${s.type}` : "";
+
+  const box = $("slots"); box.innerHTML = "";
+  let currentDay = 0;
+  state.creneaux.forEach(c=>{
+    if(c.jour !== currentDay){
+      currentDay = c.jour;
+      const h = document.createElement("div"); h.className="day-title";
+      h.textContent = `Jour ${c.jour} — ${fmtDate(c.date)}`; box.appendChild(h);
+    }
+    const el = document.createElement("div"); el.className="slot";
+    el.innerHTML = `<div class="info"><div class="p">${c.periode}</div><div class="d">Créneau ${c.numero}</div></div>` +
+      (c.signe
+        ? `<span class="state done">✓ Signé le ${fmtTime(c.horodatage)}</span>`
+        : `<span class="state todo">À signer</span><button class="btn sign" data-code="${c.code}">Signer</button>`);
+    box.appendChild(el);
+  });
+  box.querySelectorAll(".btn.sign").forEach(b=>b.addEventListener("click",()=>openPad(b.dataset.code)));
+
+  const done = state.creneaux.filter(c=>c.signe).length, total = state.creneaux.length;
+  $("fill").style.width = (total? done/total*100 : 0) + "%";
+  $("progLabel").textContent = `${done} / ${total} signés`;
+  $("complete").classList.toggle("show", done===total && total>0);
+}
+
+/* ── Signature pad ── */
+const pad = $("pad"), ctx = pad.getContext("2d");
+ctx.lineWidth = 2.4; ctx.lineCap = "round"; ctx.strokeStyle = "#1A1A1A";
+let drawing = false;
+const pos = e => { const r = pad.getBoundingClientRect(), t = e.touches? e.touches[0]: e;
+  return { x:(t.clientX-r.left)*(pad.width/r.width), y:(t.clientY-r.top)*(pad.height/r.height) }; };
+const start = e => { drawing=true; hasInk=true; const p=pos(e); ctx.beginPath(); ctx.moveTo(p.x,p.y); e.preventDefault(); };
+const move = e => { if(!drawing) return; const p=pos(e); ctx.lineTo(p.x,p.y); ctx.stroke(); e.preventDefault(); };
+const end = () => drawing=false;
+pad.addEventListener("mousedown",start); pad.addEventListener("mousemove",move); addEventListener("mouseup",end);
+pad.addEventListener("touchstart",start,{passive:false}); pad.addEventListener("touchmove",move,{passive:false}); pad.addEventListener("touchend",end);
+
+function clearPad(){ ctx.clearRect(0,0,pad.width,pad.height); hasInk=false; }
+function openPad(code){
+  current = state.creneaux.find(c=>c.code===code); clearPad();
+  $("modalTitle").textContent = `Signer — Jour ${current.jour}, ${current.periode}`;
+  $("modalSub").textContent = `${fmtDate(current.date)} • Signature au doigt ou à la souris`;
+  $("overlay").classList.add("open");
+}
+$("btnClear").onclick = clearPad;
+$("btnCancel").onclick = ()=>$("overlay").classList.remove("open");
+
+$("btnConfirm").onclick = async ()=>{
+  if(!hasInk) return toast("Signez dans le cadre avant de valider");
+  const btn = $("btnConfirm"); btn.disabled = true; btn.textContent = "Enregistrement…";
+  try{
+    const r = await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ token, creneau: current.code, signature: pad.toDataURL("image/png") })});
+    const data = await r.json();
+    if(!r.ok) throw new Error(data.error || "Erreur");
+    current.signe = true; current.horodatage = data.horodatage;
+    $("overlay").classList.remove("open");
+    toast("Signature enregistrée ✓"); render();
+  }catch(e){ toast(e.message); }
+  btn.disabled = false; btn.textContent = "Valider ma signature";
+};
+
+load();
+</script>
+</body>
+</html>
