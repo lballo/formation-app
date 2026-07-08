@@ -139,30 +139,36 @@ export default async function handler(req, res) {
     if (!lr.ok) console.error("Notion logExecution error:", await lr.text());
   }
 
-  // ─── Étape 1 : Traducteur GPT-4o-mini ───
+  // ─── Étape 1 : Traducteur GPT-4o-mini (strict) ───
+  const HUNTER_HEADCOUNT_VALID = ["1-10", "11-50", "51-200", "201-500", "501-1000", "1001-5000", "5001-10000", "10001+"];
+  const HUNTER_DEPARTMENTS_VALID = ["executive", "finance", "human_resources", "information_technology", "marketing", "operations", "sales", "support"];
+  const HUNTER_SENIORITY_VALID = ["junior", "senior", "executive"];
+
   async function traduireInstructions(instructions) {
     const prompt = `Tu convertis des instructions de prospection en francais en filtres pour l'API Hunter Discover.
 
-Instructions :
+Instructions de Laura :
 ${instructions}
 
-Retourne UNIQUEMENT un JSON avec ces champs (utilise null si non specifie) :
+Retourne UNIQUEMENT un JSON strict avec ces champs :
 {
-  "industries": ["health_wellness_fitness", "government_administration", "management_consulting", "..."],
-  "company_size": "51-200",
+  "industries": [tableau de 1 a 5 slugs Hunter valides],
+  "headcount": [tableau de paliers Hunter valides couvrant la fourchette demandee],
   "country": "FR",
-  "departments": ["human_resources", "operations", "engineering"],
-  "seniority": "senior_and_up",
+  "departments": [tableau de 1 a 3 departments Hunter valides],
+  "seniority": "senior" ou "executive",
   "max_entreprises": 10,
   "min_score_email": 70,
-  "postes_cibles_fr": ["Responsable RH", "Responsable formation", "Directeur general"]
+  "postes_cibles_fr": [liste des postes cibles en francais tels que Laura les a ecrits]
 }
 
-Taxonomie industries Hunter (choisir 1 a 5) : accounting, airlines_aviation, alternative_medicine, animation, apparel_fashion, architecture_planning, arts_crafts, automotive, aviation_aerospace, banking, biotechnology, broadcast_media, building_materials, business_supplies_equipment, capital_markets, chemicals, civic_social_organization, civil_engineering, commercial_real_estate, computer_hardware, computer_networking, computer_software, construction, consumer_electronics, consumer_goods, consumer_services, cosmetics, dairy, defense_space, design, e_learning, education_management, electrical_electronic_manufacturing, entertainment, environmental_services, events_services, executive_office, facilities_services, farming, financial_services, fine_art, fishery, food_beverages, food_production, fund_raising, furniture, gambling_casinos, glass_ceramics_concrete, government_administration, government_relations, graphic_design, health_wellness_fitness, higher_education, hospital_health_care, hospitality, human_resources, import_export, individual_family_services, industrial_automation, information_services, information_technology_and_services, insurance, international_affairs, international_trade_and_development, internet, investment_banking, investment_management, judiciary, law_enforcement, law_practice, legal_services, legislative_office, leisure_travel_tourism, libraries, logistics_and_supply_chain, luxury_goods_jewelry, machinery, management_consulting, maritime, market_research, marketing_and_advertising, mechanical_or_industrial_engineering, media_production, medical_devices, medical_practice, mental_health_care, military, mining_metals, motion_pictures_and_film, museums_and_institutions, music, nanotechnology, newspapers, non_profit_organization_management, oil_energy, online_media, outsourcing_offshoring, package_freight_delivery, packaging_and_containers, paper_and_forest_products, performing_arts, pharmaceuticals, philanthropy, photography, plastics, political_organization, primary_secondary_education, printing, professional_training_and_coaching, program_development, public_policy, public_relations_and_communications, public_safety, publishing, railroad_manufacture, ranching, real_estate, recreational_facilities_and_services, religious_institutions, renewables_and_environment, research, restaurants, retail, security_and_investigations, semiconductors, shipbuilding, sporting_goods, sports, staffing_and_recruiting, supermarkets, telecommunications, textiles, think_tanks, tobacco, translation_and_localization, transportation_trucking_railroad, utilities, venture_capital_and_private_equity, veterinary, warehousing, wholesale, wine_and_spirits, wireless, writing_and_editing.
+REGLES CRITIQUES :
+- headcount doit etre un TABLEAU de valeurs EXACTES parmi : ${HUNTER_HEADCOUNT_VALID.join(", ")}. Pour "20 a 500 salaries", choisir ["11-50", "51-200", "201-500"]. Ne jamais inventer d'autre valeur.
+- departments doit contenir uniquement des valeurs EXACTES parmi : ${HUNTER_DEPARTMENTS_VALID.join(", ")}. Pour "RH, formation, DG" : ["human_resources", "executive"].
+- seniority doit etre "senior" ou "executive" (pas "senior_and_up").
+- industries : choisir 1 a 5 slugs pertinents dans la taxonomie Hunter ci-dessous.
 
-Taxonomie company_size (choisir 1) : 1-10, 11-50, 51-200, 201-500, 501-1000, 1001-5000, 5001-10000, 10001+.
-Taxonomie departments (choisir 1 a 3) : executive, finance, human_resources, information_technology, marketing, operations, sales, support.
-Taxonomie seniority : junior, senior, executive, senior_and_up.`;
+Taxonomie industries Hunter (choisir 1 a 5 valeurs exactes) : accounting, airlines_aviation, alternative_medicine, animation, apparel_fashion, architecture_planning, arts_crafts, automotive, aviation_aerospace, banking, biotechnology, broadcast_media, building_materials, business_supplies_equipment, capital_markets, chemicals, civic_social_organization, civil_engineering, commercial_real_estate, computer_hardware, computer_networking, computer_software, construction, consumer_electronics, consumer_goods, consumer_services, cosmetics, dairy, defense_space, design, e_learning, education_management, electrical_electronic_manufacturing, entertainment, environmental_services, events_services, executive_office, facilities_services, farming, financial_services, fine_art, fishery, food_beverages, food_production, fund_raising, furniture, gambling_casinos, glass_ceramics_concrete, government_administration, government_relations, graphic_design, health_wellness_fitness, higher_education, hospital_health_care, hospitality, human_resources, import_export, individual_family_services, industrial_automation, information_services, information_technology_and_services, insurance, international_affairs, international_trade_and_development, internet, investment_banking, investment_management, judiciary, law_enforcement, law_practice, legal_services, legislative_office, leisure_travel_tourism, libraries, logistics_and_supply_chain, luxury_goods_jewelry, machinery, management_consulting, maritime, market_research, marketing_and_advertising, mechanical_or_industrial_engineering, media_production, medical_devices, medical_practice, mental_health_care, military, mining_metals, motion_pictures_and_film, museums_and_institutions, music, nanotechnology, newspapers, non_profit_organization_management, oil_energy, online_media, outsourcing_offshoring, package_freight_delivery, packaging_and_containers, paper_and_forest_products, performing_arts, pharmaceuticals, philanthropy, photography, plastics, political_organization, primary_secondary_education, printing, professional_training_and_coaching, program_development, public_policy, public_relations_and_communications, public_safety, publishing, railroad_manufacture, ranching, real_estate, recreational_facilities_and_services, religious_institutions, renewables_and_environment, research, restaurants, retail, security_and_investigations, semiconductors, shipbuilding, sporting_goods, sports, staffing_and_recruiting, supermarkets, telecommunications, textiles, think_tanks, tobacco, translation_and_localization, transportation_trucking_railroad, utilities, venture_capital_and_private_equity, veterinary, warehousing, wholesale, wine_and_spirits, wireless, writing_and_editing.`;
 
     const r = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -175,15 +181,31 @@ Taxonomie seniority : junior, senior, executive, senior_and_up.`;
     });
     if (!r.ok) throw new Error("Erreur GPT-4o-mini traducteur : " + await r.text());
     const data = await r.json();
-    return JSON.parse(data.choices[0].message.content);
+    const filtres = JSON.parse(data.choices[0].message.content);
+
+    // Validation post-traduction : on nettoie ce que GPT aurait mal généré
+    filtres.headcount = Array.isArray(filtres.headcount)
+      ? filtres.headcount.filter(v => HUNTER_HEADCOUNT_VALID.includes(v))
+      : [];
+    filtres.departments = Array.isArray(filtres.departments)
+      ? filtres.departments.filter(v => HUNTER_DEPARTMENTS_VALID.includes(v))
+      : [];
+    if (!HUNTER_SENIORITY_VALID.includes(filtres.seniority)) filtres.seniority = "senior";
+    filtres.industries = Array.isArray(filtres.industries) ? filtres.industries : [];
+    return filtres;
   }
 
-  // ─── Étape 2 : Hunter Discover ───
-  async function hunterDiscover(filtres) {
-    const body = { limit: filtres.max_entreprises || 10, country: filtres.country || "FR" };
-    if (filtres.industries?.length) body.industry = filtres.industries;
-    if (filtres.company_size) body.headcount = filtres.company_size;
+  // ─── Étape 2 : Hunter Discover (une passe) ───
+  async function hunterDiscoverPasse(filtres, industriesSubset = null) {
+    const body = {
+      limit: filtres.max_entreprises || 10,
+      country: filtres.country || "FR",
+    };
+    const industries = industriesSubset || filtres.industries;
+    if (industries?.length) body.industry = industries;
+    if (filtres.headcount?.length) body.headcount = filtres.headcount;
     if (filtres.departments?.length) body.department = filtres.departments;
+    if (filtres.seniority) body.seniority = filtres.seniority;
 
     const r = await fetch(`${HUNTER_BASE}/discover?api_key=${HUNTER_API_KEY}`, {
       method: "POST",
@@ -191,11 +213,12 @@ Taxonomie seniority : junior, senior, executive, senior_and_up.`;
       body: JSON.stringify(body),
     });
     if (!r.ok) {
-      console.error("Hunter Discover error:", await r.text());
-      return [];
+      const errText = await r.text();
+      console.error("Hunter Discover error:", errText);
+      return { entreprises: [], erreur: errText.slice(0, 300), body };
     }
     const data = await r.json();
-    return (data.data?.companies || []).map(c => ({
+    const entreprises = (data.data?.companies || []).map(c => ({
       nom: c.organization,
       domaine: c.domain,
       secteur: c.industry,
@@ -204,6 +227,35 @@ Taxonomie seniority : junior, senior, executive, senior_and_up.`;
       pays: c.country,
       description: c.description,
     }));
+    return { entreprises, erreur: null, body };
+  }
+
+  // ─── Étape 2 multi-passes : d'abord toutes les industries, puis une par une ───
+  async function hunterDiscoverMultiPasses(filtres) {
+    const journal = [];
+    const dejaVus = new Set();
+    const toutes = [];
+
+    // Passe 1 : toutes les industries ensemble
+    const p1 = await hunterDiscoverPasse(filtres);
+    journal.push(`Passe globale [${(filtres.industries || []).join(", ") || "sans industrie"}] → ${p1.entreprises.length} résultat(s)${p1.erreur ? " (erreur : " + p1.erreur + ")" : ""}`);
+    for (const e of p1.entreprises) {
+      if (!dejaVus.has(e.domaine)) { dejaVus.add(e.domaine); toutes.push(e); }
+    }
+
+    // Passe 2 : si on a besoin de plus, on interroge chaque industrie séparément
+    if (toutes.length < (filtres.max_entreprises || 10) && (filtres.industries?.length || 0) > 1) {
+      for (const ind of filtres.industries) {
+        if (toutes.length >= (filtres.max_entreprises || 10)) break;
+        const p = await hunterDiscoverPasse(filtres, [ind]);
+        journal.push(`Passe [${ind}] → ${p.entreprises.length} résultat(s)${p.erreur ? " (erreur : " + p.erreur + ")" : ""}`);
+        for (const e of p.entreprises) {
+          if (!dejaVus.has(e.domaine)) { dejaVus.add(e.domaine); toutes.push(e); }
+        }
+      }
+    }
+
+    return { entreprises: toutes.slice(0, filtres.max_entreprises || 10), journal };
   }
 
   // ─── Étape 3 : Hunter Domain Search ───
@@ -245,17 +297,18 @@ Taxonomie seniority : junior, senior, executive, senior_and_up.`;
     const dgRegex = /(directeur|directrice|ceo|dg|général|generale|founder|fondateur|président|presidente)/i;
 
     const rh = emails.filter(e => postesRegex.test((e.fonction || "") + " " + (e.department || "")));
-    const rhTop3 = rh.slice(0, 2); // 2 max sur RH/Formation
+    const rhTop = rh.slice(0, 2);
 
-    // DG uniquement si PME/ETI
+    // DG uniquement si PME/ETI (jusqu'à 500 salariés)
+    const taillesPME = ["1-10", "11-50", "51-200", "201-500"];
     let dg = [];
-    if (taille && /^(1-10|11-50|51-200|201-500)$/.test(taille)) {
+    if (taille && taillesPME.includes(taille)) {
       dg = emails.filter(e => dgRegex.test(e.fonction || "") || e.seniority === "executive").slice(0, 1);
     }
 
     // Dédoublonner par email
     const vus = new Set();
-    return [...rhTop3, ...dg].filter(c => {
+    return [...rhTop, ...dg].filter(c => {
       if (vus.has(c.email)) return false;
       vus.add(c.email);
       return true;
@@ -289,19 +342,6 @@ Taxonomie seniority : junior, senior, executive, senior_and_up.`;
     }
   }
 
-  // ─── Extraction des domaines de fallback depuis les instructions ───
-  function extraireDomainesFallback(instructions) {
-    const section = instructions.match(/domaines? de fallback([\s\S]*?)(?=##|$)/i);
-    if (!section) return [];
-    const lignes = section[1].split("\n");
-    const domaines = [];
-    for (const l of lignes) {
-      const m = l.match(/^[\s\-\*]*([a-z0-9][a-z0-9\-\.]*\.[a-z]{2,})\s*$/i);
-      if (m && !m[1].startsWith("exemple") && !/exemples?/i.test(l)) domaines.push(m[1].toLowerCase());
-    }
-    return [...new Set(domaines)];
-  }
-
   // ═══════════════════════════════════════════════════════
   //  Exécution principale
   // ═══════════════════════════════════════════════════════
@@ -328,50 +368,45 @@ Taxonomie seniority : junior, senior, executive, senior_and_up.`;
     const seuil = filtres.min_score_email || 70;
     const maxEntreprises = filtres.max_entreprises || 10;
 
-    // 4. Hunter Discover
-    let entreprises = await hunterDiscover(filtres);
-    let sourceUsed = "Hunter Discover";
-    let usedFallback = false;
-
-    // 4b. Fallback si moins de 3 entreprises
-    if (entreprises.length < 3) {
-      const fallbackDomaines = extraireDomainesFallback(instructions);
-      if (fallbackDomaines.length) {
-        usedFallback = true;
-        sourceUsed = "Hunter Fallback";
-        entreprises = fallbackDomaines.slice(0, maxEntreprises).map(d => ({
-          nom: d.split(".")[0].replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase()),
-          domaine: d,
-          secteur: null, taille: null, ville: null, pays: "FR", description: "",
-        }));
-      }
-    }
+    // 4. Hunter Discover multi-passes
+    const { entreprises, journal: journalDiscover } = await hunterDiscoverMultiPasses(filtres);
 
     if (!entreprises.length) {
       await logExecution({
-        resume: "Hunter Discover 0 résultat, aucun fallback disponible",
+        resume: "Hunter Discover 0 résultat",
         trouves: 0, ajoutes: 0, doublons: 0,
-        requetes: JSON.stringify(filtres),
-        detail: "Ajustez les instructions ou ajoutez des domaines de fallback dans la page Instructions.",
+        requetes: JSON.stringify(filtres).slice(0, 500),
+        detail: journalDiscover.join("\n") + "\n\nAjustez les instructions (secteurs plus larges, taille différente) et relancez.",
         statut: "Partiel",
         duree: Math.round((Date.now() - t0) / 1000),
       });
-      return res.status(200).json({ ok: true, message: "Aucun résultat", filtres });
+      return res.status(200).json({
+        ok: true,
+        message: "Aucune entreprise trouvée",
+        filtres,
+        journal_discover: journalDiscover,
+      });
     }
 
     // 5. Pour chaque entreprise : Domain Search + sélection contacts + enrichissement + écriture
     let ajoutes = 0, doublons = 0, entreprisesAvecContact = 0, tousContacts = 0;
+    const journalContacts = [];
 
     for (const ent of entreprises) {
       const nomLower = (ent.nom || "").toLowerCase().trim();
       if (existingNames.some(n => n.includes(nomLower) || nomLower.includes(n))) {
         doublons++;
+        journalContacts.push(`${ent.nom} → doublon existant`);
         continue;
       }
 
       const search = await hunterDomainSearch(ent.domaine, filtres.departments, seuil);
       const contacts = selectionnerContacts(search.emails, ent.taille, filtres.postes_cibles_fr);
       tousContacts += contacts.length;
+
+      // Journal transparent : combien d'emails Hunter connaît, combien passent nos filtres
+      journalContacts.push(`${ent.nom} (${ent.domaine}) → ${search.emails.length} email(s) Hunter avec score ≥${seuil}, ${contacts.length} retenu(s) après filtre poste`);
+
       if (!contacts.length) continue;
 
       entreprisesAvecContact++;
@@ -394,7 +429,7 @@ Taxonomie seniority : junior, senior, executive, senior_and_up.`;
           pertinence: c.confidence >= 80 ? "Haute" : (c.confidence >= 60 ? "Moyenne" : "Basse"),
           justification: `Correspond à la cible ${filtres.postes_cibles_fr?.join(" / ") || "définie"}. Extraction Hunter Domain Search.`,
           sourceRecherche: (c.sources || [])[0] || null,
-        }, sourceUsed);
+        }, "Hunter Discover");
         ajoutes++;
       }
       existingNames.push(nomLower);
@@ -402,10 +437,10 @@ Taxonomie seniority : junior, senior, executive, senior_and_up.`;
 
     const duree = Math.round((Date.now() - t0) / 1000);
     await logExecution({
-      resume: `${ajoutes} contact(s) via ${sourceUsed} sur ${entreprisesAvecContact} entreprise(s)`,
+      resume: `${ajoutes} contact(s) via Hunter Discover sur ${entreprisesAvecContact}/${entreprises.length} entreprise(s)`,
       trouves: tousContacts, ajoutes, doublons,
-      requetes: `Filtres Hunter : ${JSON.stringify(filtres).slice(0, 500)}`,
-      detail: `${entreprises.length} entreprise(s) découverte(s) · ${entreprisesAvecContact} avec au moins un contact qualifié${usedFallback ? " · Mode fallback utilisé" : ""}`,
+      requetes: `Filtres : ${JSON.stringify(filtres).slice(0, 400)}\n\nMulti-passes Discover :\n${journalDiscover.join("\n")}`,
+      detail: journalContacts.join("\n"),
       statut: ajoutes > 0 ? "Succès" : "Partiel",
       duree,
     });
@@ -413,12 +448,14 @@ Taxonomie seniority : junior, senior, executive, senior_and_up.`;
     return res.status(200).json({
       ok: true,
       duree: `${duree}s`,
-      source: sourceUsed,
+      source: "Hunter Discover",
       entreprises_decouvertes: entreprises.length,
       entreprises_avec_contact: entreprisesAvecContact,
       contacts_ajoutes: ajoutes,
       doublons_evites: doublons,
       filtres_utilises: filtres,
+      journal_discover: journalDiscover,
+      journal_contacts: journalContacts,
     });
 
   } catch (e) {
@@ -433,3 +470,4 @@ Taxonomie seniority : junior, senior, executive, senior_and_up.`;
     return res.status(500).json({ error: e.message, stack: e.stack?.split("\n").slice(0, 5) });
   }
 }
+
