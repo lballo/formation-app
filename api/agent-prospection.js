@@ -234,16 +234,61 @@ FORMAT DE RÉPONSE (JSON uniquement, sans markdown, sans backticks) :
       }
     }
 
-    // Nettoyer et parser
-    jsonText = jsonText.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
-    let result;
-    try {
-      result = JSON.parse(jsonText);
-    } catch {
-      const match = jsonText.match(/\{[\s\S]*\}/);
-      if (match) result = JSON.parse(match[0]);
-      else throw new Error("Impossible de parser la réponse : " + jsonText.slice(0, 500));
+    // Nettoyer et parser (version robuste)
+    jsonText = jsonText.replace(/```json\s*/gi, "").replace(/```\s*/g, "").trim();
+
+    const tryParse = (s) => { try { return JSON.parse(s); } catch { return null; } };
+
+    // Répare les erreurs JSON les plus courantes des LLM
+    const repair = (s) => s
+      .replace(/[\u201C\u201D]/g, '\\"')     // guillemets typographiques
+      .replace(/[\u2018\u2019]/g, "'")
+      .replace(/,\s*([}\]])/g, "$1");        // virgules terminales
+
+    // Extrait le premier objet JSON équilibré (accolades appariées, en ignorant les chaînes)
+    const extractBalanced = (s) => {
+      const start = s.indexOf("{");
+      if (start === -1) return null;
+      let depth = 0, inStr = false, esc = false;
+      for (let i = start; i < s.length; i++) {
+        const c = s[i];
+        if (esc) { esc = false; continue; }
+        if (c === "\\") { esc = true; continue; }
+        if (c === '"') inStr = !inStr;
+        if (inStr) continue;
+        if (c === "{") depth++;
+        if (c === "}") { depth--; if (depth === 0) return s.slice(start, i + 1); }
+      }
+      return null;
+    };
+
+    let result = tryParse(jsonText) || tryParse(repair(jsonText));
+    if (!result) {
+      const bal = extractBalanced(jsonText);
+      if (bal) result = tryParse(bal) || tryParse(repair(bal));
     }
+
+    // Dernier recours : demander à GPT-4o-mini de réparer le JSON (mode json_object garanti)
+    if (!result) {
+      const fixResp = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${OPENAI_API_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          response_format: { type: "json_object" },
+          messages: [
+            { role: "system", content: "Tu répares du JSON malformé. Réponds UNIQUEMENT avec le JSON corrigé, en conservant exactement les mêmes données." },
+            { role: "user", content: jsonText.slice(0, 15000) },
+          ],
+        }),
+      });
+      if (fixResp.ok) {
+        const fixData = await fixResp.json();
+        result = tryParse(fixData.choices?.[0]?.message?.content || "");
+      }
+    }
+
+    if (!result) throw new Error("Impossible de parser la réponse : " + jsonText.slice(0, 500));
 
     // Écrire dans la base tampon
     const prospects = result.prospects || [];
