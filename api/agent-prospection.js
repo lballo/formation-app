@@ -163,9 +163,10 @@ ${existingNames.slice(0, 150).join(", ") || "(aucune)"}
 
 RÈGLES STRICTES :
 - Ne propose JAMAIS une entreprise dont le nom est dans la liste ci-dessus
+- N'ajoute jamais un prospect à la liste si tu n'as ni mail, ni téléphone, ni contact linkedin
 - Ne scrape JAMAIS LinkedIn directement
 - Si tu ne trouves pas l'email public d'un contact, indique "à trouver" — n'invente JAMAIS
-- Limite-toi au nombre de prospects indiqué dans les instructions (par défaut 5)
+- Limite-toi au nombre de prospects indiqué dans les instructions (par défaut 10)
 - Utilise des sources variées : sites institutionnels, annuaires, offres d'emploi, communiqués, presse locale
 
 FORMAT DE RÉPONSE (JSON uniquement, sans markdown, sans backticks) :
