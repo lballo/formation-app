@@ -196,13 +196,16 @@ Taxonomie industries Hunter (choisir 1 a 5 valeurs exactes) : accounting, airlin
   }
 
   // ─── Étape 2 : Hunter Discover (une passe) ───
+  // Convertit "government_administration" → "Government Administration" (format attendu par Hunter Discover)
+  const industryToHunter = (slug) => slug.split("_").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+
   async function hunterDiscoverPasse(filtres, industriesSubset = null) {
     const body = {
-      limit: filtres.max_entreprises || 10,
+      limit: Math.min(filtres.max_entreprises || 10, 25),
       country: filtres.country || "FR",
     };
-    const industries = industriesSubset || filtres.industries;
-    if (industries?.length) body.industry = industries;
+    const industriesSlugs = industriesSubset || filtres.industries;
+    if (industriesSlugs?.length) body.industry = industriesSlugs.map(industryToHunter);
     if (filtres.headcount?.length) body.headcount = filtres.headcount;
     if (filtres.departments?.length) body.department = filtres.departments;
     if (filtres.seniority) body.seniority = filtres.seniority;
@@ -470,4 +473,3 @@ Taxonomie industries Hunter (choisir 1 a 5 valeurs exactes) : accounting, airlin
     return res.status(500).json({ error: e.message, stack: e.stack?.split("\n").slice(0, 5) });
   }
 }
-
