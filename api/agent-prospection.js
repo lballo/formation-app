@@ -161,13 +161,14 @@ ${instructions}
 ENTREPRISES DÉJÀ CONNUES (NE PAS PROPOSER) :
 ${existingNames.slice(0, 150).join(", ") || "(aucune)"}
 
-RÈGLES STRICTES :
-- Ne propose JAMAIS une entreprise dont le nom est dans la liste ci-dessus
-- N'ajoute jamais un prospect à la liste si tu n'as ni mail, ni téléphone, ni contact linkedin
-- Ne scrape JAMAIS LinkedIn directement
-- Si tu ne trouves pas l'email public d'un contact, indique "à trouver" — n'invente JAMAIS
-- Limite-toi au nombre de prospects indiqué dans les instructions (par défaut 10)
-- Utilise des sources variées : sites institutionnels, annuaires, offres d'emploi, communiqués, presse locale
+RÈGLES STRICTES (par ordre de priorité) :
+1. LES INSTRUCTIONS DE LAURA CI-DESSUS PRIMENT SUR TOUT — respecte scrupuleusement le nombre de prospects demandé, les zones géographiques, les secteurs et les consignes de contact qui y figurent
+2. Ne propose JAMAIS une entreprise dont le nom est dans la liste des entreprises connues
+3. N'inclus un prospect QUE s'il a au moins UN moyen de contact réel (email OU téléphone OU LinkedIn) — un prospect sans aucun moyen de contact sera rejeté automatiquement
+4. Ne scrape JAMAIS LinkedIn directement (mais tu peux noter l'URL d'un profil si elle est visible sur le site de l'entreprise)
+5. N'invente JAMAIS d'email — si non trouvé, mets null
+6. Utilise des sources variées : sites institutionnels, annuaires, offres d'emploi, communiqués, presse locale
+7. Fais autant de recherches web que nécessaire pour atteindre le nombre de prospects demandé dans les instructions
 
 FORMAT DE RÉPONSE (JSON uniquement, sans markdown, sans backticks) :
 {
@@ -246,11 +247,20 @@ FORMAT DE RÉPONSE (JSON uniquement, sans markdown, sans backticks) :
 
     // Écrire dans la base tampon
     const prospects = result.prospects || [];
-    let ajoutes = 0, doublons = 0;
+    let ajoutes = 0, doublons = 0, rejetes = 0;
+
+    // Un moyen de contact est valide s'il est non-vide et différent de null/"à trouver"
+    const hasValue = (v) => v && String(v).trim() && !["null", "à trouver", "a trouver", "n/a", "-"].includes(String(v).trim().toLowerCase());
 
     for (const p of prospects) {
       const nomLower = (p.entreprise || "").toLowerCase().trim();
       if (!nomLower) continue;
+
+      // ⛔ Règle de Laura appliquée côté serveur : au moins UN moyen de contact réel
+      if (!hasValue(p.contact_email) && !hasValue(p.contact_telephone) && !hasValue(p.contact_linkedin)) {
+        rejetes++;
+        continue;
+      }
 
       if (existingNames.some(n => n.includes(nomLower) || nomLower.includes(n))) {
         doublons++;
@@ -260,15 +270,15 @@ FORMAT DE RÉPONSE (JSON uniquement, sans markdown, sans backticks) :
       await createProspect({
         entreprise: p.entreprise,
         secteur: p.secteur,
-        siteWeb: p.site_web,
+        siteWeb: hasValue(p.site_web) ? p.site_web : null,
         adresse: p.adresse,
         notesEntreprise: p.notes_entreprise,
         contactNom: p.contact_nom,
         contactPrenom: p.contact_prenom,
         contactFonction: p.contact_fonction,
-        contactEmail: p.contact_email,
-        contactTel: p.contact_telephone,
-        contactLinkedin: p.contact_linkedin,
+        contactEmail: hasValue(p.contact_email) ? p.contact_email : null,
+        contactTel: hasValue(p.contact_telephone) ? p.contact_telephone : null,
+        contactLinkedin: hasValue(p.contact_linkedin) ? p.contact_linkedin : null,
         notesContact: p.notes_contact,
         pertinence: p.pertinence,
         justification: p.justification,
@@ -283,7 +293,7 @@ FORMAT DE RÉPONSE (JSON uniquement, sans markdown, sans backticks) :
       resume: result.resume || `${ajoutes} prospect(s) à valider`,
       trouves: prospects.length, ajoutes, doublons,
       requetes: (result.recherches_effectuees || []).join(" | "),
-      detail: prospects.map(p => `${p.pertinence} — ${p.entreprise} (${p.secteur}) → ${p.contact_prenom} ${p.contact_nom}, ${p.contact_fonction}`).join("\n"),
+      detail: `${rejetes} rejeté(s) sans moyen de contact\n` + prospects.map(p => `${p.pertinence} — ${p.entreprise} (${p.secteur}) → ${p.contact_prenom} ${p.contact_nom}, ${p.contact_fonction}`).join("\n"),
       statut: ajoutes > 0 ? "Succès" : (prospects.length > 0 ? "Partiel" : "Erreur"),
       duree,
     });
@@ -293,6 +303,7 @@ FORMAT DE RÉPONSE (JSON uniquement, sans markdown, sans backticks) :
       prospects_trouves: prospects.length,
       en_attente_validation: ajoutes,
       doublons_evites: doublons,
+      rejetes_sans_contact: rejetes,
       resume: result.resume,
     });
 
