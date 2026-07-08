@@ -16,9 +16,9 @@
  */
 
 const INSTRUCTIONS_PAGE = "397075e127d281b18b11c08b5b58945a";
-const ENTREPRISES_DB    = "2fd075e127d281a8bb9b000b87733d9d";
-const PROSPECTS_DB      = "633af2b6f78d4aeebaeaaee561b1eb7f";
-const JOURNAL_DB        = "e702e72ebcc34f70a83607e83e468489";
+const ENTREPRISES_DB    = "2fd075e127d2819f9fabd4820a69f7f8";
+const PROSPECTS_DB      = "922854e54a5a441da7a00030dd6dfc3f";
+const JOURNAL_DB        = "2d38dc00a27b4c17854b689c3607b847";
 
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
