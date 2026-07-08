@@ -164,36 +164,39 @@ ${existingNames.slice(0, 150).join(", ") || "(aucune)"}
 RÈGLES STRICTES (par ordre de priorité) :
 1. LES INSTRUCTIONS DE LAURA CI-DESSUS PRIMENT SUR TOUT — respecte scrupuleusement le nombre de prospects demandé, les zones géographiques, les secteurs et les consignes de contact qui y figurent
 2. Ne propose JAMAIS une entreprise dont le nom est dans la liste des entreprises connues
-3. N'inclus un prospect QUE s'il a au moins UN moyen de contact réel (email OU téléphone OU LinkedIn) — un prospect sans aucun moyen de contact sera rejeté automatiquement
+3. N'inclus un prospect QUE s'il a au moins UN moyen de contact réel (email OU téléphone OU LinkedIn)
 4. Ne scrape JAMAIS LinkedIn directement (mais tu peux noter l'URL d'un profil si elle est visible sur le site de l'entreprise)
-5. N'invente JAMAIS d'email — si non trouvé, mets null
-6. Utilise des sources variées : sites institutionnels, annuaires, offres d'emploi, communiqués, presse locale
-7. Fais autant de recherches web que nécessaire pour atteindre le nombre de prospects demandé dans les instructions
+5. INTERDICTION ABSOLUE d'inventer un email, un téléphone ou un nom. Chaque donnée de contact doit avoir été VUE par toi sur une page web pendant cette session de recherche. "source_recherche" doit contenir l'URL EXACTE de la page où la donnée est visible. Chaque email et téléphone sera VÉRIFIÉ AUTOMATIQUEMENT sur cette page après ta réponse : toute donnée introuvable sur la page citée sera supprimée et le prospect rejeté. Un email plausible mais non vérifié ne sert à rien.
+6. Si tu ne trouves pas une donnée, mets null (le mot-clé JSON, pas le texte "null")
+7. Ne copie JAMAIS les descriptions du format ci-dessous comme valeurs — remplace tout par les vraies données ou null
+8. Utilise des sources variées : sites institutionnels, annuaires, offres d'emploi, communiqués, presse locale
+9. Fais autant de recherches web que nécessaire pour atteindre le nombre de prospects demandé — mieux vaut 5 prospects vérifiés que 15 inventés
 
-FORMAT DE RÉPONSE (JSON uniquement, sans markdown, sans backticks) :
+FORMAT DE RÉPONSE (JSON uniquement, sans markdown, sans backticks — remplace chaque null par la vraie valeur trouvée, ou laisse null) :
 {
-  "recherches_effectuees": ["requête 1", "requête 2"],
+  "recherches_effectuees": [],
   "prospects": [
     {
-      "entreprise": "Nom",
-      "secteur": "Un de : Santé & Bien-être, Industrie, Conseil & Services, Tech & Digital, Culture & Médias, Commerce & Distribution, Finance & Assurance, Immobilier, Autre",
-      "site_web": "https://...",
-      "adresse": "Ville",
-      "notes_entreprise": "Pourquoi pertinent",
-      "contact_nom": "NOM",
-      "contact_prenom": "Prénom",
-      "contact_fonction": "Responsable Formation",
-      "contact_email": "email ou à trouver",
-      "contact_telephone": "si trouvé ou null",
-      "contact_linkedin": "URL ou null",
-      "notes_contact": "Comment trouvé",
-      "pertinence": "Haute",
-      "justification": "Raison de la qualification",
-      "source_recherche": "URL ou description de la source"
+      "entreprise": null,
+      "secteur": null,
+      "site_web": null,
+      "adresse": null,
+      "notes_entreprise": null,
+      "contact_nom": null,
+      "contact_prenom": null,
+      "contact_fonction": null,
+      "contact_email": null,
+      "contact_telephone": null,
+      "contact_linkedin": null,
+      "notes_contact": null,
+      "pertinence": null,
+      "justification": null,
+      "source_recherche": null
     }
   ],
-  "resume": "Résumé en une phrase"
-}`;
+  "resume": null
+}
+Valeurs attendues : secteur = un de [Santé & Bien-être, Industrie, Conseil & Services, Tech & Digital, Culture & Médias, Commerce & Distribution, Finance & Assurance, Immobilier, Éducation, Tourisme & Loisirs, Autre] ; pertinence = Haute, Moyenne ou Basse ; source_recherche = URL exacte (https://...) de la page où les coordonnées sont visibles.`;
 
     const openaiResponse = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
@@ -292,42 +295,77 @@ FORMAT DE RÉPONSE (JSON uniquement, sans markdown, sans backticks) :
 
     // Écrire dans la base tampon
     const prospects = result.prospects || [];
-    let ajoutes = 0, doublons = 0, rejetes = 0;
+    let ajoutes = 0, doublons = 0, rejetes = 0, verifKO = 0;
 
-    // Un moyen de contact est valide s'il est non-vide et différent de null/"à trouver"
-    const hasValue = (v) => v && String(v).trim() && !["null", "à trouver", "a trouver", "n/a", "-"].includes(String(v).trim().toLowerCase());
+    // Valeur réelle = non vide, pas un placeholder du template, pas une consigne recopiée
+    const PLACEHOLDER = /(à trouver|a trouver|si trouvé|ou null|^null$|^nom$|^pr[ée]nom$|^n\/a$|^-$|exemple|entreprise\.com|^url\b|^email\b|^https:\/\/\.\.\.)/i;
+    const hasValue = (v) => {
+      if (!v) return false;
+      const s = String(v).trim();
+      return s.length > 1 && !PLACEHOLDER.test(s);
+    };
+
+    // Vérifie qu'une donnée figure réellement sur la page source citée
+    async function verifyOnPage(url, needle, isPhone = false) {
+      if (!url || !/^https?:\/\//i.test(url)) return false;
+      try {
+        const ctrl = new AbortController();
+        const to = setTimeout(() => ctrl.abort(), 6000);
+        const r = await fetch(url, { signal: ctrl.signal, headers: { "User-Agent": "Mozilla/5.0 (compatible; LauraBalloBot/1.0)" }, redirect: "follow" });
+        clearTimeout(to);
+        if (!r.ok) return false;
+        const html = (await r.text()).toLowerCase();
+        if (isPhone) {
+          const digits = String(needle).replace(/\D/g, "");
+          if (digits.length < 8) return false;
+          return html.replace(/[^0-9]/g, "").includes(digits.slice(-9));
+        }
+        return html.includes(String(needle).toLowerCase());
+      } catch { return false; }
+    }
 
     for (const p of prospects) {
       const nomLower = (p.entreprise || "").toLowerCase().trim();
-      if (!nomLower) continue;
-
-      // ⛔ Règle de Laura appliquée côté serveur : au moins UN moyen de contact réel
-      if (!hasValue(p.contact_email) && !hasValue(p.contact_telephone) && !hasValue(p.contact_linkedin)) {
-        rejetes++;
-        continue;
-      }
+      if (!nomLower || !hasValue(p.entreprise)) continue;
 
       if (existingNames.some(n => n.includes(nomLower) || nomLower.includes(n))) {
         doublons++;
         continue;
       }
 
+      // Nettoyage initial des placeholders
+      let email = hasValue(p.contact_email) && /@/.test(p.contact_email) ? String(p.contact_email).trim() : null;
+      let tel = hasValue(p.contact_telephone) ? String(p.contact_telephone).trim() : null;
+      let linkedin = hasValue(p.contact_linkedin) && /linkedin\.com\//i.test(p.contact_linkedin) ? String(p.contact_linkedin).trim() : null;
+      const contactNom = hasValue(p.contact_nom) ? p.contact_nom : null;
+      const contactPrenom = hasValue(p.contact_prenom) ? p.contact_prenom : null;
+
+      // ✅ Vérification anti-hallucination : la donnée doit figurer sur la page citée
+      if (email && !(await verifyOnPage(p.source_recherche, email))) { email = null; verifKO++; }
+      if (tel && !(await verifyOnPage(p.source_recherche, tel, true))) { tel = null; verifKO++; }
+
+      // ⛔ Règle de Laura : au moins UN moyen de contact vérifié
+      if (!email && !tel && !linkedin) {
+        rejetes++;
+        continue;
+      }
+
       await createProspect({
         entreprise: p.entreprise,
         secteur: p.secteur,
-        siteWeb: hasValue(p.site_web) ? p.site_web : null,
-        adresse: p.adresse,
-        notesEntreprise: p.notes_entreprise,
-        contactNom: p.contact_nom,
-        contactPrenom: p.contact_prenom,
-        contactFonction: p.contact_fonction,
-        contactEmail: hasValue(p.contact_email) ? p.contact_email : null,
-        contactTel: hasValue(p.contact_telephone) ? p.contact_telephone : null,
-        contactLinkedin: hasValue(p.contact_linkedin) ? p.contact_linkedin : null,
-        notesContact: p.notes_contact,
-        pertinence: p.pertinence,
-        justification: p.justification,
-        sourceRecherche: p.source_recherche,
+        siteWeb: hasValue(p.site_web) && /^https?:\/\//i.test(p.site_web) ? p.site_web : null,
+        adresse: hasValue(p.adresse) ? p.adresse : null,
+        notesEntreprise: hasValue(p.notes_entreprise) ? p.notes_entreprise : null,
+        contactNom: contactNom,
+        contactPrenom: contactPrenom,
+        contactFonction: hasValue(p.contact_fonction) ? p.contact_fonction : null,
+        contactEmail: email,
+        contactTel: tel,
+        contactLinkedin: linkedin,
+        notesContact: hasValue(p.notes_contact) ? p.notes_contact : null,
+        pertinence: ["Haute", "Moyenne", "Basse"].includes(p.pertinence) ? p.pertinence : null,
+        justification: hasValue(p.justification) ? p.justification : null,
+        sourceRecherche: hasValue(p.source_recherche) ? p.source_recherche : null,
       });
       ajoutes++;
       existingNames.push(nomLower);
@@ -338,7 +376,7 @@ FORMAT DE RÉPONSE (JSON uniquement, sans markdown, sans backticks) :
       resume: result.resume || `${ajoutes} prospect(s) à valider`,
       trouves: prospects.length, ajoutes, doublons,
       requetes: (result.recherches_effectuees || []).join(" | "),
-      detail: `${rejetes} rejeté(s) sans moyen de contact\n` + prospects.map(p => `${p.pertinence} — ${p.entreprise} (${p.secteur}) → ${p.contact_prenom} ${p.contact_nom}, ${p.contact_fonction}`).join("\n"),
+      detail: `${rejetes} rejeté(s) sans contact vérifié · ${verifKO} donnée(s) supprimée(s) car introuvable(s) sur la page citée\n` + prospects.map(p => `${p.pertinence} — ${p.entreprise} (${p.secteur}) → ${p.contact_prenom} ${p.contact_nom}, ${p.contact_fonction}`).join("\n"),
       statut: ajoutes > 0 ? "Succès" : (prospects.length > 0 ? "Partiel" : "Erreur"),
       duree,
     });
@@ -349,6 +387,7 @@ FORMAT DE RÉPONSE (JSON uniquement, sans markdown, sans backticks) :
       en_attente_validation: ajoutes,
       doublons_evites: doublons,
       rejetes_sans_contact: rejetes,
+      donnees_supprimees_verification: verifKO,
       resume: result.resume,
     });
 
