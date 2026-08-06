@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Questionnaire de satisfaction — réponses • Laura Ballo Formation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+:root{--black:#1A1A1A;--white:#FFF;--light-beige:#FBF4EE;--warm-beige:#E8DDD6;--warm-gray:#6B6560;
+--text-dark:#2C2C2C;--accent:#C4A574;--accent-dark:#A68B5B;--success:#7BA05B;--alert:#B8534A;
+--font-h:'DM Serif Display',Georgia,serif;--font-b:'DM Sans',system-ui,sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-b);background:var(--light-beige);color:var(--text-dark);line-height:1.6;min-height:100vh}
+.hero{background:linear-gradient(135deg,var(--black),#2a2a2a);color:var(--white);padding:36px 20px 28px}
+.hero-inner{max-width:760px;margin:0 auto}
+.hero .badge{display:inline-block;background:var(--accent);color:var(--black);font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;padding:5px 12px;border-radius:4px;margin-bottom:14px}
+.hero h1{font-family:var(--font-h);font-weight:400;font-size:1.6rem;line-height:1.25}
+.hero p{color:var(--warm-beige);margin-top:8px;font-size:.92rem}
+.wrap{max-width:760px;margin:0 auto;padding:26px 20px 70px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+.btn{display:inline-flex;align-items:center;gap:8px;border:none;border-radius:10px;padding:13px 22px;
+font-family:var(--font-b);font-size:.92rem;font-weight:600;cursor:pointer;transition:.25s;text-decoration:none}
+.btn.primary{background:var(--black);color:#fff}
+.btn.primary:hover{background:var(--accent-dark)}
+.btn.primary[disabled]{opacity:.55;cursor:wait}
+.btn.soft{background:transparent;color:var(--text-dark);border:1px solid var(--warm-beige)}
+.btn.soft:hover{border-color:var(--accent);color:var(--accent-dark)}
+.msg{max-width:560px;margin:16vh auto;text-align:center;padding:0 20px}
+.msg .ico{font-size:2.2rem;margin-bottom:10px}
+.msg h1{font-family:var(--font-h);font-weight:400;font-size:1.5rem;margin-bottom:8px}
+.msg p{color:var(--warm-gray)}
+.msg a{color:var(--accent-dark)}
+
+/* ── Document exporté ── */
+#doc{background:var(--white);border:1px solid var(--warm-beige);border-radius:14px;padding:34px 36px}
+.doc-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;border-bottom:2px solid var(--black);padding-bottom:16px;margin-bottom:20px}
+.doc-brand{font-family:var(--font-h);font-size:1.3rem;line-height:1.2}
+.doc-brand small{display:block;font-family:var(--font-b);font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--accent-dark);margin-top:3px}
+.doc-title{text-align:right}
+.doc-title .t{font-weight:700;font-size:.95rem}
+.doc-title .d{font-size:.78rem;color:var(--warm-gray)}
+.meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 24px;margin-bottom:22px}
+.meta-row{font-size:.86rem}
+.meta-row .lbl{display:block;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--warm-gray)}
+.notes{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:6px}
+.score{border:1px solid var(--warm-beige);border-radius:12px;padding:14px 10px;text-align:center;page-break-inside:avoid;break-inside:avoid}
+.score .v{font-family:var(--font-h);font-size:1.7rem;line-height:1.2}
+.score .v small{font-size:.85rem;color:var(--warm-gray)}
+.score .l{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--warm-gray);margin-top:4px;line-height:1.35}
+.score.total{background:var(--black);color:#fff;border-color:var(--black)}
+.score.total .v{color:var(--accent)}
+.score.total .v small{color:rgba(255,255,255,.6)}
+.score.total .l{color:rgba(255,255,255,.7)}
+h2.sec{font-family:var(--font-h);font-weight:400;font-size:1.15rem;margin:22px 0 10px}
+.comment{background:var(--light-beige);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:12px 16px;font-size:.88rem;margin-bottom:6px;white-space:pre-wrap}
+.temoignage{display:flex;align-items:center;gap:8px;font-size:.84rem;margin-top:6px}
+.temoignage .pill{font-size:.72rem;font-weight:700;border-radius:20px;padding:3px 10px}
+.temoignage .pill.oui{background:#EAF3DE;color:#3B6D11}
+.temoignage .pill.non{background:var(--warm-beige);color:var(--warm-gray)}
+.doc-foot{border-top:1px solid var(--warm-beige);margin-top:24px;padding-top:12px;font-size:.7rem;color:var(--warm-gray);line-height:1.5}
+
+@media print{
+  body{background:#fff}
+  .hero,.actions{display:none!important}
+  .wrap{max-width:none;padding:0}
+  #doc{border:none;border-radius:0;padding:0}
+}
+@media(max-width:560px){
+  #doc{padding:22px 18px}
+  .meta-grid{grid-template-columns:1fr}
+  .notes{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<div class="msg" id="loading"><h1>Chargement…</h1><p>Préparation des réponses.</p></div>
+<div class="msg" id="errorBox" style="display:none"><div class="ico">🔒</div><h1>Lien invalide</h1>
+  <p>Ce lien n'est pas reconnu. Contactez votre formatrice : contact@lauraballo.com</p></div>
+<div class="msg" id="pendingBox" style="display:none"><div class="ico">⏳</div><h1>Questionnaire non complété</h1>
+  <p>Les réponses seront disponibles ici dès que le questionnaire aura été transmis.<br>
+  <a id="formLink" href="#">Accéder au questionnaire →</a></p></div>
+
+<div id="app" style="display:none">
+  <header class="hero"><div class="hero-inner">
+    <span class="badge">Réponses</span>
+    <h1>Questionnaire de satisfaction</h1>
+    <p id="intro">—</p>
+  </div></header>
+
+  <main class="wrap">
+    <div class="actions">
+      <button class="btn primary" id="btnPdf">⬇︎&nbsp; Télécharger le PDF</button>
+      <button class="btn soft" id="btnPrint">Imprimer</button>
+    </div>
+
+    <div id="doc">
+      <div class="doc-head">
+        <div class="doc-brand">Laura Ballo<small>Formation certifiée Qualiopi</small></div>
+        <div class="doc-title">
+          <div class="t">Questionnaire de satisfaction</div>
+          <div class="d">Évaluation à chaud — fin de formation</div>
+        </div>
+      </div>
+
+      <div class="meta-grid">
+        <div class="meta-row"><span class="lbl">Stagiaire</span><span id="mNom">—</span></div>
+        <div class="meta-row"><span class="lbl">Entreprise / Établissement</span><span id="mEntreprise">—</span></div>
+        <div class="meta-row"><span class="lbl">Formation</span><span id="mFormation">—</span></div>
+        <div class="meta-row"><span class="lbl">Session</span><span id="mSession">—</span></div>
+        <div class="meta-row"><span class="lbl">Lieu</span><span id="mLieu">—</span></div>
+        <div class="meta-row"><span class="lbl">Formatrice</span><span>Laura Ballo</span></div>
+        <div class="meta-row"><span class="lbl">Questionnaire transmis le</span><span id="mDate">—</span></div>
+      </div>
+
+      <h2 class="sec" style="margin-top:0">Notes attribuées</h2>
+      <div class="notes" id="notes"></div>
+
+      <div id="avisBlock" style="display:none">
+        <h2 class="sec">Que pensez-vous de cette formation ?</h2>
+        <div class="comment" id="avisText"></div>
+      </div>
+
+      <div id="commentairesBlock" style="display:none">
+        <h2 class="sec">Axes d'amélioration, remarques ou suggestions</h2>
+        <div class="comment" id="commentairesText"></div>
+      </div>
+
+      <div class="temoignage" id="temoignage" style="display:none"></div>
+
+      <div class="doc-foot">
+        Document généré depuis l'espace formation — Laura Ballo Coaching, organisme de formation certifié Qualiopi.
+        Questionnaire de satisfaction à chaud recueilli en fin de formation (référentiel national qualité, indicateur 30 —
+        recueil des appréciations des parties prenantes). Réponses transmises par le ou la stagiaire via son lien personnel.
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+const token = new URLSearchParams(location.search).get("token");
+const $ = id => document.getElementById(id);
+const fmtDate = iso => iso ? new Date(iso).toLocaleDateString("fr-FR", {day:"numeric", month:"long", year:"numeric"}) : "—";
+const esc = s => String(s || "").replace(/</g, "&lt;");
+const show = id => ["loading","errorBox","pendingBox","app"].forEach(x => $(x).style.display = x===id ? "block" : "none");
+
+const LABELS = [
+  ["accueilPausesRepas", "Accueil, pauses & repas"],
+  ["confortSalle", "Confort de la salle"],
+  ["respectProgramme", "Respect du programme"],
+  ["utiliteProfessionnelle", "Utilité professionnelle"],
+  ["qualitePedagogie", "Qualité de la pédagogie"],
+  ["moyensPedagogiques", "Moyens pédagogiques"],
+  ["professionnalismeFormateur", "Professionnalisme du formateur"],
+];
+
+let NOM = "";
+
+async function load(){
+  if(!token) return show("errorBox");
+  let d;
+  try{
+    const r = await fetch(`/api/satisfaction-formation?token=${encodeURIComponent(token)}&mode=resultats`);
+    d = await r.json();
+    if(!r.ok){
+      if(d && d.nonComplete){ $("formLink").href = `/satisfaction-formation?token=${token}`; return show("pendingBox"); }
+      return show("errorBox");
+    }
+  }catch(e){ return show("errorBox"); }
+
+  const sat = d.satisfaction || {};
+  NOM = d.participant.nom || "";
+  $("intro").textContent = `${NOM}${d.formation ? " — " + d.formation : ""}`;
+  $("mNom").textContent = NOM || "—";
+  $("mEntreprise").textContent = d.session?.entreprise || "—";
+  $("mFormation").textContent = d.formation || "—";
+  $("mSession").textContent = d.session
+    ? [d.session.code, d.session.dateDebut ? fmtDate(d.session.dateDebut) + (d.session.dateFin && d.session.dateFin !== d.session.dateDebut ? " → " + fmtDate(d.session.dateFin) : "") : ""].filter(Boolean).join(" • ") || "—"
+    : "—";
+  $("mLieu").textContent = d.session?.lieu || "—";
+  $("mDate").textContent = fmtDate(sat.dateSoumission);
+
+  const notes = sat.notes || {};
+  const vals = LABELS.map(([k]) => notes[k]).filter(v => typeof v === "number");
+  const moyenne = vals.length ? (vals.reduce((a, b) => a + b, 0) / vals.length) : null;
+  $("notes").innerHTML = LABELS.map(([k, label]) => `
+    <div class="score">
+      <div class="v">${notes[k] ?? "—"}<small>/10</small></div>
+      <div class="l">${label}</div>
+    </div>`).join("") + `
+    <div class="score total">
+      <div class="v">${moyenne != null ? String(Math.round(moyenne * 10) / 10).replace(".", ",") : "—"}<small>/10</small></div>
+      <div class="l">Moyenne générale</div>
+    </div>`;
+
+  if(sat.avisFormation){
+    $("avisBlock").style.display = "block";
+    $("avisText").textContent = sat.avisFormation;
+  }
+  if(sat.commentairesLibres){
+    $("commentairesBlock").style.display = "block";
+    $("commentairesText").textContent = sat.commentairesLibres;
+  }
+
+  const t = $("temoignage");
+  t.style.display = "flex";
+  if(sat.accepteTemoignage){
+    t.innerHTML = `<span class="pill oui">✓ Publication acceptée</span>
+      <span>Le ou la stagiaire accepte la publication de son avis sur le site${sat.fonction ? ` — fonction affichée : <b>${esc(sat.fonction)}</b>` : ""}.</span>`;
+  } else {
+    t.innerHTML = `<span class="pill non">Confidentiel</span>
+      <span>Le ou la stagiaire n'a pas souhaité la publication de son avis.</span>`;
+  }
+
+  show("app");
+}
+
+$("btnPrint").onclick = () => window.print();
+$("btnPdf").onclick = async () => {
+  const btn = $("btnPdf");
+  btn.disabled = true; btn.textContent = "Génération…";
+  const slug = (NOM || "participant").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-zA-Z0-9]+/g,"-").replace(/^-|-$/g,"");
+  try{
+    await html2pdf().set({
+      margin: [12, 12, 14, 12],
+      filename: `satisfaction-${slug}.pdf`,
+      image: { type: "jpeg", quality: 0.96 },
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+      pagebreak: { mode: ["css", "avoid-all"] },
+    }).from($("doc")).save();
+  }catch(e){ window.print(); }
+  btn.disabled = false; btn.innerHTML = "⬇︎&nbsp; Télécharger le PDF";
+};
+
+load();
+</script>
+</body>
+</html>
