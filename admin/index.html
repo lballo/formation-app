@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Pilotage formations • Laura Ballo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+:root{--black:#1A1A1A;--white:#FFF;--light-beige:#FBF4EE;--warm-beige:#E8DDD6;--warm-gray:#6B6560;
+--text-dark:#2C2C2C;--muted:#8A8A8A;--accent:#C4A574;--accent-dark:#A68B5B;--success:#7BA05B;
+--alert:#B8534A;--font-h:'DM Serif Display',Georgia,serif;--font-b:'DM Sans',system-ui,sans-serif;
+--shadow:0 8px 24px rgba(0,0,0,.07)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-b);background:var(--light-beige);color:var(--text-dark);line-height:1.5}
+header{background:var(--black);color:var(--white);padding:16px 28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;position:sticky;top:0;z-index:20}
+header h1{font-family:var(--font-h);font-weight:400;font-size:1.25rem}
+header .badge{background:var(--accent);color:var(--black);font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:4px 10px;border-radius:4px}
+.spacer{flex:1}
+select.filter{border:1px solid rgba(255,255,255,.25);background:transparent;color:var(--white);border-radius:8px;padding:8px 12px;font-family:var(--font-b);font-size:.82rem;cursor:pointer}
+select.filter option{color:var(--text-dark)}
+.viewswitch{display:flex;background:rgba(255,255,255,.1);border-radius:8px;overflow:hidden}
+.viewswitch button{border:none;background:transparent;color:rgba(255,255,255,.6);padding:8px 18px;font-family:var(--font-b);font-size:.82rem;font-weight:600;cursor:pointer}
+.viewswitch button.on{background:var(--accent);color:var(--black)}
+.monthnav{display:flex;align-items:center;gap:10px;color:var(--white);font-size:.9rem}
+.monthnav button{border:1px solid rgba(255,255,255,.25);background:transparent;color:var(--white);width:30px;height:30px;border-radius:6px;cursor:pointer;font-size:.9rem}
+.monthnav strong{min-width:150px;text-align:center;font-weight:600;text-transform:capitalize}
+main{max-width:1200px;margin:0 auto;padding:26px 24px 80px}
+
+/* Métriques */
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:28px}
+.metric{background:var(--white);border:1px solid var(--warm-beige);border-radius:12px;padding:16px 18px}
+.metric .label{font-size:13px;color:var(--muted)}
+.metric .value{font-size:26px;font-weight:600;font-family:var(--font-h);color:var(--black)}
+.metric .value.warn{color:var(--alert)}
+.metric .value.ok{color:var(--success)}
+
+/* Session */
+.session{background:var(--white);border:1px solid var(--warm-beige);border-radius:14px;margin-bottom:24px;overflow:hidden;box-shadow:var(--shadow)}
+.session-head{background:linear-gradient(135deg,var(--black),#2b2b2b);color:var(--white);padding:14px 20px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.session-head h2{font-family:var(--font-h);font-weight:400;font-size:1.12rem;flex:1;min-width:200px}
+.session-head a{color:var(--accent);font-size:.78rem;text-decoration:none;white-space:nowrap}
+.chip{font-size:.68rem;font-weight:700;padding:3px 10px;border-radius:4px;text-transform:uppercase;letter-spacing:.4px}
+.chip.INTER{background:#7BA05B;color:#fff}
+.chip.INTRA{background:var(--accent);color:var(--black)}
+.chip.Individuel{background:#8a7bb0;color:#fff}
+.chip.Présentiel{background:#E6F1FB;color:#185FA5;text-transform:none;font-weight:600}
+.chip.Distanciel{background:#EEEDFE;color:#534AB7;text-transform:none;font-weight:600}
+.chip.Hybride{background:#E1F5EE;color:#0F6E56;text-transform:none;font-weight:600}
+.chip.st{background:rgba(255,255,255,.15);color:#fff;font-weight:500;text-transform:none}
+.chip.warn{background:var(--alert);color:#fff;text-transform:none;font-weight:600}
+
+/* Layout 3 colonnes */
+.session-body{display:grid;grid-template-columns:230px 1fr 250px}
+@media(max-width:940px){.session-body{grid-template-columns:1fr}}
+.col{padding:16px 18px;min-width:0}
+.col+.col{border-left:1px solid var(--warm-beige)}
+@media(max-width:940px){.col+.col{border-left:none;border-top:1px solid var(--warm-beige)}}
+.col-title{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--accent-dark);margin-bottom:12px}
+
+/* Infos pratiques */
+.info-row{display:flex;gap:8px;font-size:13px;padding:5px 0}
+.info-row .lbl{color:var(--muted);min-width:72px;font-size:12px;flex-shrink:0}
+.info-row a{color:var(--accent-dark)}
+.info-sep{margin-top:8px;padding-top:8px;border-top:1px solid var(--warm-beige)}
+
+/* Ressources */
+.res-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--warm-beige);border-radius:8px;margin-bottom:8px;font-size:13px;cursor:pointer;text-decoration:none;color:var(--text-dark);transition:.2s;background:var(--white)}
+.res-item:hover{border-color:var(--accent);background:var(--light-beige)}
+.res-icon{font-size:17px;flex-shrink:0}
+.res-name{font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.res-dl{font-size:11px;color:var(--accent-dark)}
+.res-empty{font-size:12px;color:var(--muted);font-style:italic;padding:6px 0 10px}
+
+/* Rapport */
+.rapport-btn{display:flex;flex-direction:column;align-items:center;gap:5px;width:100%;padding:16px 10px;border-radius:10px;cursor:pointer;transition:.2s;border:2px solid var(--warm-beige);background:var(--white);color:var(--muted);font-family:var(--font-b);text-align:center;margin-bottom:18px}
+.rapport-btn:hover{border-color:var(--accent);color:var(--text-dark)}
+.rapport-btn.done{background:#EAF3DE;border-color:#cfe0bd;color:#3B6D11}
+.rapport-btn.done:hover{border-color:#7BA05B}
+.rapport-btn .icon{font-size:22px}
+.rapport-btn .rname{font-size:13px;font-weight:600}
+.rapport-btn .rstatus{font-size:11px}
+
+/* Participants */
+.participant{background:var(--light-beige);border:1px solid var(--warm-beige);border-radius:12px;padding:16px;margin-bottom:10px}
+.participant:last-child{margin-bottom:0}
+.p-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.p-name{font-weight:600;font-size:15px;flex:1;min-width:140px}
+.p-progress-text{font-size:13px;color:var(--muted)}
+.copy-link{border:1px solid var(--warm-beige);background:var(--white);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:var(--font-b);color:var(--text-dark);white-space:nowrap;transition:.2s}
+.copy-link:hover{border-color:var(--accent);background:var(--accent);color:var(--black)}
+.progress-bar{height:6px;background:var(--warm-beige);border-radius:3px;overflow:hidden;margin-bottom:14px}
+.progress-fill{height:100%;background:var(--success);border-radius:3px;transition:width .3s}
+.form-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media(max-width:560px){.form-grid{grid-template-columns:repeat(2,1fr)}}
+.form-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:14px 6px;border-radius:10px;cursor:pointer;transition:all .2s;border:2px solid transparent;text-align:center;min-height:84px;font-family:var(--font-b);background:none}
+.form-btn .icon{font-size:22px}
+.form-btn .fname{font-size:12px;font-weight:600;line-height:1.3;color:inherit}
+.form-btn .fstatus{font-size:10.5px;font-weight:400}
+.form-btn.done{background:#EAF3DE;border-color:#cfe0bd;color:#3B6D11}
+.form-btn.done:hover{background:#dbe8cd;border-color:#7BA05B}
+.form-btn.partial{background:#FBEED9;border-color:#ecd7ae;color:#854F0B}
+.form-btn.partial:hover{background:#f3e2c5;border-color:#BA7517}
+.form-btn.todo{background:var(--white);border-color:var(--warm-beige);color:var(--muted)}
+.form-btn.todo:hover{border-color:var(--accent);color:var(--text-dark)}
+.empty{color:var(--muted);font-size:13px;padding:8px 0}
+.empty-all{background:var(--white);border:1px dashed var(--warm-beige);border-radius:14px;padding:44px;text-align:center;color:var(--muted)}
+.legend{display:flex;gap:16px;font-size:12px;color:var(--muted);margin-top:24px;padding-top:16px;border-top:1px solid var(--warm-beige);flex-wrap:wrap}
+.legend span{display:flex;align-items:center;gap:6px}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.dot.done{background:#7BA05B}.dot.partial{background:#BA7517}.dot.todo{background:var(--warm-beige);border:1px dashed var(--muted)}
+
+/* Vue Mois */
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal .dow{background:#bfbcb8;color:#fff;font-size:.78rem;font-weight:700;text-align:center;padding:7px;border-radius:6px;text-transform:capitalize}
+.cell{background:var(--white);border:1px solid var(--warm-beige);border-radius:8px;min-height:112px;padding:6px;font-size:.75rem}
+.cell.out{background:transparent;border-style:dashed;opacity:.5}
+.cell .dnum{color:var(--muted);font-size:.72rem;margin-bottom:4px}
+.cell.today{border-color:var(--accent)}
+.cell.today .dnum{color:var(--black);font-weight:700}
+.evt{border-radius:5px;padding:4px 7px;margin-bottom:4px;cursor:pointer;color:#fff;line-height:1.3}
+.evt .t{font-weight:600;display:block}
+.evt .l{opacity:.85;font-size:.68rem}
+.evt.INTER{background:#7BA05B}.evt.INTRA{background:var(--accent-dark)}.evt.Individuel{background:#8a7bb0}
+.evt.st-Annulée{background:#b8b3ae;text-decoration:line-through}
+
+/* Modal rapport */
+.overlay{position:fixed;inset:0;background:rgba(26,26,26,.55);display:none;align-items:flex-start;justify-content:center;z-index:50;padding:5vh 16px;overflow-y:auto}
+.overlay.show{display:flex}
+.modal{background:var(--white);border-radius:16px;max-width:640px;width:100%;padding:26px 28px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.modal h3{font-family:var(--font-h);font-weight:400;font-size:1.3rem;margin-bottom:2px}
+.modal .sub{font-size:.82rem;color:var(--muted);margin-bottom:18px}
+.modal label{display:block;font-weight:600;font-size:.85rem;margin:14px 0 5px}
+.modal label small{font-weight:400;color:var(--muted)}
+.modal textarea{width:100%;min-height:76px;border:1px solid var(--warm-beige);border-radius:8px;background:var(--light-beige);font-family:var(--font-b);font-size:.88rem;padding:10px 12px;resize:vertical;outline:none}
+.modal textarea:focus{border-color:var(--accent);background:var(--white)}
+.modal-actions{display:flex;gap:10px;margin-top:20px}
+.modal-actions button{flex:1;padding:12px;border-radius:8px;font-family:var(--font-b);font-weight:600;font-size:.9rem;cursor:pointer}
+.btn-save{border:none;background:var(--black);color:#fff}
+.btn-save:hover{background:var(--accent-dark)}
+.btn-save[disabled]{opacity:.5}
+.btn-cancel{border:1px solid var(--warm-beige);background:var(--white);color:var(--text-dark)}
+
+/* Onglets modal */
+.mtabs{display:flex;gap:6px;border-bottom:1px solid var(--warm-beige);margin:14px 0 16px}
+.mtab{border:none;background:none;font-family:var(--font-b);font-size:.86rem;font-weight:600;color:var(--muted);padding:9px 14px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.mtab.on{color:var(--text-dark);border-bottom-color:var(--accent)}
+.ev-card{border:1px solid var(--warm-beige);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.ev-card.off{opacity:.55;background:var(--light-beige)}
+.ev-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.ev-name{font-weight:700;font-size:.92rem}
+.ev-ecrit{font-size:.78rem;color:var(--muted)}
+.ev-row{display:flex;align-items:center;gap:8px;font-size:.85rem;margin-bottom:8px}
+.ev-row input[type=number]{width:64px;border:1px solid var(--warm-beige);border-radius:8px;padding:7px 8px;font-family:var(--font-b);font-size:.88rem;text-align:center;background:var(--light-beige)}
+.ev-row input[type=number]:focus{border-color:var(--accent);background:var(--white);outline:none}
+.ev-total{background:#EAF3DE;border-radius:8px;padding:7px 12px;font-size:.82rem;margin-bottom:8px}
+.ev-total b{color:#3B6D11}
+.ev-card textarea{width:100%;min-height:56px;border:1px solid var(--warm-beige);border-radius:8px;background:var(--light-beige);font-family:var(--font-b);font-size:.85rem;padding:8px 10px;resize:vertical;outline:none}
+.ev-card textarea:focus{border-color:var(--accent);background:var(--white)}
+.ev-off-note{font-size:.8rem;color:var(--muted)}
+
+/* QR codes stagiaires */
+.qr-group{margin-top:14px;padding-top:12px;border-top:1px solid var(--warm-beige);display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.qr-group-title{width:100%;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted)}
+.qr-btn{border:1px solid var(--warm-beige);background:var(--light-beige);border-radius:8px;padding:8px 12px;
+font-family:var(--font-b);font-size:.82rem;font-weight:600;color:var(--text-dark);cursor:pointer;transition:.2s}
+.qr-btn:hover{border-color:var(--accent);background:var(--white)}
+.qr-modal{max-width:720px}
+.qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-top:16px}
+.qr-card{border:1px solid var(--warm-beige);border-radius:12px;padding:16px 14px;text-align:center}
+.qr-name{font-weight:700;font-size:.92rem;margin-bottom:10px}
+.qr-box{display:flex;justify-content:center;margin-bottom:10px}
+.qr-box img,.qr-box canvas{border:1px solid var(--warm-beige);border-radius:8px;padding:6px;background:#fff}
+.qr-url{font-size:.68rem;color:var(--muted);word-break:break-all;line-height:1.45;margin-bottom:10px}
+.qr-copy{border:1px solid var(--accent-dark);background:var(--white);color:var(--accent-dark);border-radius:8px;
+padding:7px 14px;font-family:var(--font-b);font-size:.8rem;font-weight:600;cursor:pointer;transition:.2s}
+.qr-copy:hover{background:var(--accent-dark);color:#fff}
+.qr-print{border:none;background:var(--black);color:#fff;border-radius:8px;padding:10px 16px;font-family:var(--font-b);font-size:.85rem;font-weight:600;cursor:pointer}
+.qr-print:hover{background:var(--accent-dark)}
+@media print{
+  body.qr-printing > *:not(#qrOverlay){display:none !important}
+  body.qr-printing #qrOverlay{position:static;display:block;background:none;padding:0}
+  body.qr-printing .qr-modal{box-shadow:none;max-width:none;padding:0}
+  body.qr-printing .qr-actions,body.qr-printing #qrClose{display:none}
+}
+
+/* Émargement formateur */
+.formateur-sep{border-top:1px solid var(--warm-beige);margin:16px 0 12px}
+.formateur-card{background:var(--white);border:1px solid var(--warm-beige);border-left:3px solid var(--accent);border-radius:0 12px 12px 0;padding:12px 14px}
+.formateur-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:9px}
+.formateur-label{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--accent-dark)}
+.formateur-nom{font-weight:600;font-size:.95rem}
+.formateur-fonction{font-size:.72rem;color:var(--muted)}
+.formateur-btn{display:flex;align-items:center;gap:10px;width:100%;border:1px solid var(--warm-beige);border-radius:9px;
+background:var(--light-beige);padding:10px 12px;font-family:var(--font-b);text-align:left;cursor:pointer;transition:.2s}
+.formateur-btn:hover{border-color:var(--accent)}
+.formateur-btn.done{background:#EAF3DE;border-color:#C0DD97}
+.formateur-btn .ic{font-size:17px;flex-shrink:0}
+.formateur-btn .txt{flex:1}
+.formateur-btn .nm{font-size:.82rem;font-weight:600;color:var(--text-dark)}
+.formateur-btn .st{font-size:.7rem;color:var(--muted)}
+.formateur-btn.done .nm,.formateur-btn.done .st{color:#3B6D11}
+.formateur-btn .go{font-size:.72rem;color:var(--accent-dark)}
+.formateur-btn.done .go{color:#3B6D11}
+
+/* Auth + toast */
+.gate{max-width:380px;margin:14vh auto;background:var(--white);border-radius:16px;box-shadow:var(--shadow);padding:34px;text-align:center}
+.gate h1{font-family:var(--font-h);font-weight:400;font-size:1.4rem;margin-bottom:6px}
+.gate p{font-size:.85rem;color:var(--muted);margin-bottom:18px}
+.gate input{width:100%;padding:12px 14px;border:1px solid var(--warm-beige);border-radius:8px;font-family:var(--font-b);font-size:.9rem;margin-bottom:12px;background:var(--light-beige)}
+.gate button{width:100%;padding:12px;border:none;border-radius:8px;background:var(--black);color:#fff;font-weight:600;font-family:var(--font-b);cursor:pointer}
+.gate button:hover{background:var(--accent-dark)}
+.gate .err{color:var(--alert);font-size:.8rem;margin-top:10px;display:none}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--black);color:#fff;padding:11px 22px;border-radius:30px;font-size:.85rem;opacity:0;transition:.3s;pointer-events:none;z-index:60}
+.toast.show{opacity:1}
+@media(max-width:640px){.cell{min-height:70px}header{padding:12px 16px}}
+</style>
+</head>
+<body>
+
+<div id="gate" class="gate">
+  <h1>Pilotage formations</h1>
+  <p>Espace formatrice — entrez votre clé d'accès.</p>
+  <input type="password" id="keyInput" placeholder="Clé d'accès" autocomplete="current-password">
+  <button id="keyBtn">Entrer</button>
+  <div class="err" id="keyErr">Clé refusée. Vérifiez la valeur de DASHBOARD_SECRET.</div>
+</div>
+
+<div id="shell" style="display:none">
+<header>
+  <h1>Laura Ballo</h1><span class="badge">Organisme de formation · Qualiopi</span>
+  <div class="spacer"></div>
+  <select class="filter" id="statusFilter">
+    <option value="avenir">Sessions à venir</option>
+    <option value="toutes">Toutes les sessions</option>
+    <option value="terminees">Terminées</option>
+  </select>
+  <div class="monthnav" id="monthnav" style="display:none">
+    <button id="prevM" aria-label="Mois précédent">‹</button>
+    <strong id="monthLabel"></strong>
+    <button id="nextM" aria-label="Mois suivant">›</button>
+  </div>
+  <div class="viewswitch">
+    <button id="vList" class="on">Sessions</button>
+    <button id="vMonth">Mois</button>
+  </div>
+</header>
+<main>
+  <div id="listView">
+    <div class="metrics" id="metrics"></div>
+    <div id="sessions"></div>
+    <div class="legend">
+      <span><span class="dot done"></span> Complété — clic : ouvrir la fiche de réponses</span>
+      <span><span class="dot partial"></span> Partiel — clic : ouvrir la page d'émargement</span>
+      <span><span class="dot todo"></span> À faire — clic : ouvrir le formulaire du stagiaire</span>
+    </div>
+  </div>
+  <div id="monthView" style="display:none"></div>
+</main>
+</div>
+
+<!-- Modal rapport de session -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h3>📝 Rapport de session</h3>
+    <div class="sub" id="modalSub">—</div>
+
+    <div class="mtabs">
+      <button class="mtab on" id="mtabBilan" type="button">Bilan de session</button>
+      <button class="mtab" id="mtabEvals" type="button">Finaliser les évaluations</button>
+    </div>
+
+    <div id="tabBilan">
+    <label>Déroulé & adaptations réalisées <small>— Qualiopi Ind. 4 : personnalisation</small></label>
+    <textarea id="rDeroule" placeholder="Programme suivi, ajustements de rythme ou de contenu selon le groupe…"></textarea>
+    <label>Points forts de la session</label>
+    <textarea id="rForts" placeholder="Dynamique de groupe, exercices qui ont bien fonctionné…"></textarea>
+    <label>Difficultés rencontrées & solutions</label>
+    <textarea id="rDiff" placeholder="Problèmes logistiques, niveaux hétérogènes, gestion du temps…"></textarea>
+    <label>Axes d'amélioration <small>— alimente votre journal d'amélioration continue (Ind. 30-32)</small></label>
+    <textarea id="rAmelio" placeholder="Ce que vous ferez différemment la prochaine fois…"></textarea>
+    </div>
+
+    <div id="tabEvals" style="display:none">
+      <div class="sub" style="margin-bottom:12px">Implication et participation active (30 % de la note finale) et commentaire individuel. La note totale se met à jour en direct et alimente le PDF de résultats.</div>
+      <div id="evList"></div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" id="modalCancel">Annuler</button>
+      <button class="btn-save" id="modalSave">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="qrOverlay">
+  <div class="modal qr-modal">
+    <h3 id="qrTitle">Liens d'accès</h3>
+    <div class="sub" id="qrSub">—</div>
+    <div class="qr-grid" id="qrGrid"></div>
+    <div class="modal-actions qr-actions">
+      <button class="btn-cancel" id="qrClose">Fermer</button>
+      <button class="qr-print" id="qrPrint">🖨 Imprimer / projeter</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+let DATA = null, STATS = null, view = "list", cursor = new Date(), currentSession = null;
+const base = location.origin;
+
+const fmtRange = (a, b, j) => {
+  if (!a) return "Dates à définir";
+  const o = {day: "numeric", month: "long", year: "numeric"};
+  const d1 = new Date(a + "T12:00").toLocaleDateString("fr-FR", o);
+  if (b && b !== a) return `${d1} → ${new Date(b + "T12:00").toLocaleDateString("fr-FR", o)}`;
+  if (j > 1) {
+    const e = new Date(a + "T12:00"); let add = j - 1;
+    while (add > 0) { e.setDate(e.getDate() + 1); const w = e.getDay(); if (w !== 0 && w !== 6) add--; }
+    return `${d1} → ${e.toLocaleDateString("fr-FR", o)}`;
+  }
+  return d1;
+};
+const toast = m => { const t = $("toast"); t.textContent = m; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 2400); };
+const copy = (txt, label) => navigator.clipboard.writeText(txt).then(() => toast(label + " copié ✓"));
+const notionUrl = id => `https://www.notion.so/${id}`;
+const esc = s => String(s || "").replace(/</g, "&lt;");
+
+/* ── Auth ── */
+async function tryKey(key) {
+  const r = await fetch(`/api/dashboard?key=${encodeURIComponent(key)}`);
+  if (!r.ok) { $("keyErr").style.display = "block"; localStorage.removeItem("dashKey"); return; }
+  DATA = await r.json();
+  localStorage.setItem("dashKey", key);
+  $("gate").style.display = "none"; $("shell").style.display = "block";
+  renderList(); renderMonth();
+  fetch("/api/stats-formations").then(x => x.ok ? x.json() : null).then(s => { STATS = s; renderMetrics(); }).catch(() => {});
+}
+$("keyBtn").onclick = () => tryKey($("keyInput").value.trim());
+$("keyInput").addEventListener("keydown", e => { if (e.key === "Enter") tryKey($("keyInput").value.trim()); });
+const saved = localStorage.getItem("dashKey"); if (saved) tryKey(saved);
+
+/* ── Vues ── */
+function setView(v) {
+  view = v;
+  $("vList").classList.toggle("on", v === "list"); $("vMonth").classList.toggle("on", v === "month");
+  $("listView").style.display = v === "list" ? "block" : "none";
+  $("monthView").style.display = v === "month" ? "block" : "none";
+  $("monthnav").style.display = v === "month" ? "flex" : "none";
+  $("statusFilter").style.display = v === "list" ? "block" : "none";
+}
+$("vList").onclick = () => setView("list");
+$("vMonth").onclick = () => setView("month");
+$("prevM").onclick = () => { cursor.setMonth(cursor.getMonth() - 1); renderMonth(); };
+$("nextM").onclick = () => { cursor.setMonth(cursor.getMonth() + 1); renderMonth(); };
+$("statusFilter").onchange = renderList;
+
+/* ── Métriques ── */
+function renderMetrics() {
+  const todayISO = new Date().toISOString().slice(0, 10);
+  const upcoming = (DATA?.sessions || []).filter(s => (!s.dateDebut || s.dateDebut >= todayISO) && s.statut !== "Annulée");
+  const allP = upcoming.flatMap(s => s.participants);
+  const posManquants = allP.filter(p => !p.positionnement).length;
+  const sat = STATS?.global?.moyenne;
+  $("metrics").innerHTML = `
+    <div class="metric"><div class="label">Sessions à venir</div><div class="value">${upcoming.length}</div></div>
+    <div class="metric"><div class="label">Participants inscrits</div><div class="value">${allP.length}</div></div>
+    <div class="metric"><div class="label">Posit. non complétés</div><div class="value ${posManquants ? "warn" : ""}">${posManquants}</div></div>
+    <div class="metric"><div class="label">Satisfaction moyenne</div><div class="value ${sat != null ? "ok" : ""}">${sat != null ? sat.toLocaleString("fr-FR") + " / 10" : "—"}</div></div>`;
+}
+
+/* ── Boutons formulaires (4) ── */
+function formBtn({icon, name, state, status, openUrl, tip}) {
+  return `<button class="form-btn ${state}" data-url="${openUrl || ""}" title="${tip}">
+    <span class="icon">${icon}</span><span class="fname">${name}</span><span class="fstatus">${status}</span>
+  </button>`;
+}
+
+function participantCard(p, s) {
+  const em = p.emargementsSignes, tot = s.nbAttendus;
+  const emDone = tot > 0 && em >= tot;
+  const doneCount = [p.positionnement, emDone, p.evaluation, p.satisfaction].filter(Boolean).length;
+  const pct = Math.round(doneCount / 4 * 100);
+  const btns = [
+    formBtn({icon: "📋", name: "Positionnement",
+      state: p.positionnement ? "done" : "todo",
+      status: p.positionnement ? "✓ Complété" : "À compléter",
+      openUrl: p.positionnement && p.posRecId ? notionUrl(p.posRecId) : `${base}/positionnement/?token=${p.id}`,
+      tip: p.positionnement ? "Ouvrir la fiche de réponses (Notion)" : "Ouvrir le formulaire du stagiaire"}),
+    formBtn({icon: "✍️", name: "Émargement",
+      state: emDone ? "done" : (em > 0 ? "partial" : "todo"),
+      status: emDone ? `✓ ${em} / ${tot}` : `${em} / ${tot} signés`,
+      openUrl: `${base}/emargement/?token=${p.id}`,
+      tip: "Ouvrir la page d'émargement (signatures et horodatages)"}),
+    formBtn({icon: "📊", name: "Évaluation",
+      state: p.evaluation ? "done" : "todo",
+      status: p.evaluation ? `✓ ${p.scoreEcrit != null ? Math.round(p.scoreEcrit * 100) + "%" : "Complété"}` : "À compléter",
+      openUrl: p.evaluation ? `${base}/evaluation-resultats/?token=${p.id}` : `${base}/evaluation/?token=${p.id}`,
+      tip: p.evaluation ? "Voir les résultats et télécharger le PDF" : "Ouvrir le quiz du stagiaire"}),
+    formBtn({icon: "😊", name: "Satisfaction",
+      state: p.satisfaction ? "done" : "todo",
+      status: p.satisfaction ? "✓ Complété" : "À compléter",
+      openUrl: p.satisfaction ? `${base}/satisfaction-resultats/?token=${p.id}` : `${base}/satisfaction-formation?token=${p.id}`,
+      tip: p.satisfaction ? "Voir les réponses et télécharger le PDF" : "Ouvrir le questionnaire du stagiaire"}),
+  ].join("");
+  return `<div class="participant">
+    <div class="p-top">
+      <span class="p-name">${esc(p.nom) || "—"}</span>
+      <span class="p-progress-text">${doneCount} / 4</span>
+      <button class="copy-link" data-c="${base}/espace/?token=${p.id}">🔑 Copier lien espace</button>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <div class="form-grid">${btns}</div>
+  </div>`;
+}
+
+function formateurCard(s) {
+  const fr = s.formateur;
+  if (!fr) return "";
+  const em = fr.emargementsSignes, tot = s.nbAttendus;
+  const done = tot > 0 && em >= tot;
+  return `<div class="formateur-sep"></div>
+    <div class="formateur-card">
+      <div class="formateur-head">
+        <span class="formateur-label">Formateur</span>
+        <span class="formateur-nom">${esc(fr.nom)}</span>
+        ${fr.fonction ? `<span class="formateur-fonction">· ${esc(fr.fonction)}</span>` : ""}
+      </div>
+      <button class="formateur-btn ${done ? "done" : ""}" data-url="${base}/emargement/?token=${s.id.replace(/-/g, "")}&role=formateur">
+        <span class="ic">✍️</span>
+        <span class="txt"><span class="nm">Émargement formateur</span><br><span class="st">${done ? `✓ ${em} / ${tot} signés` : `${em} / ${tot} signés`}</span></span>
+        <span class="go">${done ? "Consulter →" : "Signer →"}</span>
+      </button>
+    </div>`;
+}
+
+/* ── Colonnes gauche/droite ── */
+function infosCol(s) {
+  const rows = [];
+  if (s.code) rows.push(["Code", esc(s.code)]);
+  rows.push(["Dates", fmtRange(s.dateDebut, s.dateFin, s.jours)]);
+  rows.push(["Durée", `${s.jours} jour${s.jours > 1 ? "s" : ""}`]);
+  if (s.horaires) rows.push(["Horaires", esc(s.horaires)]);
+  if (s.lieu) rows.push(["Lieu", esc(s.lieu)]);
+  if (s.adresse) rows.push(["Adresse", esc(s.adresse).replace(/\n/g, "<br>")]);
+  if (s.lienVisio) rows.push(["Visio", `<a href="${s.lienVisio}" target="_blank" rel="noopener">Lien classe virtuelle ↗</a>`]);
+  let html = rows.map(([l, v]) => `<div class="info-row"><span class="lbl">${l}</span><span>${v}</span></div>`).join("");
+  const extra = [];
+  if (s.entreprise) extra.push(`<div class="info-row"><span class="lbl">Entreprise</span><span>${esc(s.entreprise)}</span></div>`);
+  extra.push(`<div class="info-row"><span class="lbl">Convocation</span><span>${s.convocationEnvoyee ? "✅ Envoyée" : "⏳ À envoyer"}</span></div>`);
+  html += `<div class="info-sep">${extra.join("")}</div>`;
+  if (s.formation?.notionUrl) {
+    html += `<a class="res-item" href="${s.formation.notionUrl}" target="_blank" rel="noopener" style="margin-top:12px"><span class="res-icon">🔗</span><span class="res-name">Fiche formation (Notion)</span><span class="res-dl">↗</span></a>`;
+  }
+  if ((s.ressources.convention || []).length) {
+    s.ressources.convention.forEach(f => {
+      html += `<a class="res-item" href="${f.url}" target="_blank" rel="noopener"><span class="res-icon">📝</span><span class="res-name">Convention signée</span><span class="res-dl">↓</span></a>`;
+    });
+  } else {
+    html += `<div class="res-empty">Convention non déposée</div>`;
+  }
+  if (s.participants.length) {
+    html += `<div class="qr-group">
+      <div class="qr-group-title">QR codes stagiaires</div>
+      <button class="qr-btn" data-sid="${s.id}" data-kind="evaluation">📊 Évaluation</button>
+      <button class="qr-btn" data-sid="${s.id}" data-kind="satisfaction">😊 Satisfaction</button>
+      <button class="qr-btn" data-sid="${s.id}" data-kind="emargement">✍️ Émargement</button>
+    </div>`;
+  }
+  return html;
+}
+
+function resCol(s) {
+  const items = [];
+  const add = (icon, nom, url) => items.push(`<a class="res-item" href="${url}" target="_blank" rel="noopener"><span class="res-icon">${icon}</span><span class="res-name">${esc(nom)}</span><span class="res-dl">↓</span></a>`);
+  (s.ressources.programme || []).forEach(f => add("📄", "Programme de formation", f.url));
+  (s.ressources.supportParticipant || []).forEach(f => add("📑", "Support participant", f.url));
+  (s.ressources.supportFormateur || []).forEach(f => add("🎓", "Support formateur", f.url));
+  (s.ressources.supportsPerso || []).forEach(f => add("📂", f.nom || "Support personnalisé", f.url));
+  if (s.formation?.id) {
+    add("📄", "Questionnaire d'évaluation — vierge (PDF)", `${base}/questionnaire-pdf/?formation=${s.formation.id}&mode=vierge`);
+    add("✅", "Questionnaire corrigé — formateur (PDF)", `${base}/questionnaire-pdf/?formation=${s.formation.id}&mode=corrige`);
+  }
+  return items.join("");
+}
+
+function rapportBtn(s) {
+  const r = s.rapport || {};
+  const dateStr = r.date ? new Date(r.date).toLocaleDateString("fr-FR", {day: "numeric", month: "short"}) : "";
+  return `<button class="rapport-btn ${r.complete ? "done" : ""}" data-sid="${s.id}">
+    <span class="icon">📝</span>
+    <span class="rname">Rapport de session</span>
+    <span class="rstatus">${r.complete ? `✓ Complété${dateStr ? " le " + dateStr : ""} — modifier` : "À rédiger en fin de session"}</span>
+  </button>`;
+}
+
+/* ── Vue Sessions ── */
+function renderList() {
+  renderMetrics();
+  const todayISO = new Date().toISOString().slice(0, 10);
+  const in7 = new Date(Date.now() + 7 * 864e5).toISOString().slice(0, 10);
+  const mode = $("statusFilter").value;
+  let sessions = [...(DATA?.sessions || [])];
+  if (mode === "avenir") sessions = sessions.filter(s => ((!s.dateDebut || s.dateDebut >= todayISO) && s.statut !== "Annulée") || s.statut === "En cours");
+  if (mode === "terminees") sessions = sessions.filter(s => s.statut === "Terminée" || (s.dateDebut && s.dateDebut < todayISO));
+  sessions.sort((a, b) => (a.dateDebut || "9999").localeCompare(b.dateDebut || "9999"));
+
+  const box = $("sessions");
+  if (!sessions.length) {
+    box.innerHTML = `<div class="empty-all">Aucune session dans cette vue. Créez une session dans Notion (📅 Sessions) : elle apparaîtra ici.</div>`;
+    return;
+  }
+  box.innerHTML = sessions.map(s => {
+    const alertConvoc = !s.convocationEnvoyee && s.dateDebut && s.dateDebut >= todayISO && s.dateDebut <= in7;
+    return `
+    <article class="session" id="sess-${s.id.replace(/-/g, "")}">
+      <div class="session-head">
+        <span class="chip ${s.type || "INTER"}">${s.type || "—"}</span>
+        ${s.modalite ? `<span class="chip ${s.modalite}">${s.modalite}</span>` : ""}
+        <span class="chip st">${s.statut || "Planifiée"}</span>
+        ${alertConvoc ? `<span class="chip warn">⚠ Convocation à envoyer</span>` : ""}
+        <h2>${esc(s.titre) || "Session sans titre"}</h2>
+        <a href="${s.notionUrl}" target="_blank" rel="noopener">Notion ↗</a>
+      </div>
+      <div class="session-body">
+        <div class="col">
+          <div class="col-title">Infos pratiques</div>
+          ${infosCol(s)}
+        </div>
+        <div class="col">
+          <div class="col-title">${s.participants.length} participant${s.participants.length > 1 ? "s" : ""}</div>
+          ${s.participants.length
+            ? s.participants.map(p => participantCard(p, s)).join("")
+            : `<div class="empty">Aucun participant inscrit — ajoutez-les dans Notion (👥 Participants) en les reliant à la session.</div>`}
+          ${formateurCard(s)}
+        </div>
+        <div class="col">
+          <div class="col-title">Rapport & ressources</div>
+          ${rapportBtn(s)}
+          ${resCol(s)}
+        </div>
+      </div>
+    </article>`;
+  }).join("");
+
+  box.querySelectorAll(".copy-link").forEach(b => b.onclick = () => copy(b.dataset.c, "Lien espace"));
+  box.querySelectorAll(".form-btn").forEach(b => b.onclick = () => { if (b.dataset.url) window.open(b.dataset.url, "_blank", "noopener"); });
+  box.querySelectorAll(".rapport-btn").forEach(b => b.onclick = () => openRapport(b.dataset.sid));
+  box.querySelectorAll(".qr-btn").forEach(b => b.onclick = () => openQr(b.dataset.sid, b.dataset.kind));
+  box.querySelectorAll(".formateur-btn").forEach(b => b.onclick = () => window.open(b.dataset.url, "_blank", "noopener"));
+}
+
+/* ── Modal QR codes stagiaires ── */
+const QR_KINDS = {
+  evaluation:   { titre: "Liens d'accès pour l'évaluation des acquis",      path: id => `${base}/evaluation/?token=${id}` },
+  satisfaction: { titre: "Liens d'accès pour les questionnaires de satisfaction", path: id => `${base}/satisfaction-formation?token=${id}` },
+  emargement:   { titre: "Liens d'accès pour l'émargement",                 path: id => `${base}/emargement/?token=${id}` },
+};
+
+function openQr(sid, kind) {
+  const s = (DATA?.sessions || []).find(x => x.id === sid);
+  const k = QR_KINDS[kind];
+  if (!s || !k) return;
+  $("qrTitle").textContent = k.titre;
+  $("qrSub").textContent = `${s.titre} — ${fmtRange(s.dateDebut, s.dateFin, s.jours)}`;
+  const grid = $("qrGrid");
+  grid.innerHTML = s.participants.map((p, i) => `
+    <div class="qr-card">
+      <div class="qr-name">${esc(p.nom) || "Participant"}</div>
+      <div class="qr-box" id="qrbox-${i}"></div>
+      <div class="qr-url">${k.path(p.id)}</div>
+      <button class="qr-copy" data-c="${k.path(p.id)}">Copier le lien</button>
+    </div>`).join("");
+  s.participants.forEach((p, i) => {
+    try {
+      new QRCode(document.getElementById(`qrbox-${i}`), { text: k.path(p.id), width: 150, height: 150, correctLevel: QRCode.CorrectLevel.M });
+    } catch (e) { /* le lien texte + bouton copier restent disponibles */ }
+  });
+  grid.querySelectorAll(".qr-copy").forEach(b => b.onclick = () => copy(b.dataset.c, "Lien"));
+  $("qrOverlay").classList.add("show");
+}
+$("qrClose").onclick = () => $("qrOverlay").classList.remove("show");
+$("qrOverlay").addEventListener("click", e => { if (e.target === $("qrOverlay")) $("qrOverlay").classList.remove("show"); });
+$("qrPrint").onclick = () => {
+  document.body.classList.add("qr-printing");
+  window.print();
+  document.body.classList.remove("qr-printing");
+};
+
+/* ── Modal rapport ── */
+function setMTab(t) {
+  $("mtabBilan").classList.toggle("on", t === "bilan");
+  $("mtabEvals").classList.toggle("on", t === "evals");
+  $("tabBilan").style.display = t === "bilan" ? "block" : "none";
+  $("tabEvals").style.display = t === "evals" ? "block" : "none";
+}
+$("mtabBilan").onclick = () => setMTab("bilan");
+$("mtabEvals").onclick = () => setMTab("evals");
+
+function evTotalLine(card) {
+  const ecrit = parseFloat(card.dataset.ecrit);
+  const val = parseFloat(card.querySelector("input")?.value);
+  const t = card.querySelector(".ev-total");
+  if (!t) return;
+  if (Number.isNaN(ecrit) || Number.isNaN(val)) { t.innerHTML = `Note totale (écrit 70 % + votre évaluation 30 %) = <b>—</b>`; return; }
+  t.innerHTML = `Note totale (écrit 70 % + votre évaluation 30 %) = <b>${Math.round(ecrit * 70 + val * 0.3)} %</b>`;
+}
+
+function buildEvals(s) {
+  const box = $("evList");
+  if (!s.participants.length) { box.innerHTML = `<div class="ev-off-note">Aucun participant sur cette session.</div>`; return; }
+  box.innerHTML = s.participants.map(p => {
+    if (!p.evaluation || !p.evalRecId) {
+      return `<div class="ev-card off">
+        <div class="ev-head"><span class="ev-name">${esc(p.nom)}</span><span class="ev-ecrit">Écrit : —</span></div>
+        <div class="ev-off-note">Quiz non complété — la saisie sera possible après transmission.</div>
+      </div>`;
+    }
+    const ecritPct = p.scoreEcrit != null ? Math.round(p.scoreEcrit * 100) : null;
+    const valPct = p.scoreFormateur != null ? Math.round(p.scoreFormateur * 100) : "";
+    return `<div class="ev-card" data-eid="${p.evalRecId}" data-ecrit="${p.scoreEcrit ?? ""}">
+      <div class="ev-head"><span class="ev-name">${esc(p.nom)}</span>
+        <span class="ev-ecrit">Évaluation écrite : <b>${ecritPct != null ? ecritPct + " %" : "—"}</b></span></div>
+      <div class="ev-row"><input type="number" min="0" max="100" step="5" value="${valPct}" placeholder="—"> % implication et participation active</div>
+      <div class="ev-total"></div>
+      <textarea placeholder="Commentaire individuel (visible sur le PDF de résultats)…">${esc(p.commentaireFormateur || "")}</textarea>
+    </div>`;
+  }).join("");
+  box.querySelectorAll(".ev-card[data-eid]").forEach(card => {
+    evTotalLine(card);
+    card.querySelector("input").addEventListener("input", () => evTotalLine(card));
+  });
+}
+
+function openRapport(sid) {
+  currentSession = (DATA?.sessions || []).find(s => s.id === sid);
+  if (!currentSession) return;
+  const r = currentSession.rapport || {};
+  $("modalSub").textContent = `${currentSession.titre} — ${fmtRange(currentSession.dateDebut, currentSession.dateFin, currentSession.jours)}`;
+  $("rDeroule").value = r.deroule || "";
+  $("rForts").value = r.pointsForts || "";
+  $("rDiff").value = r.difficultes || "";
+  $("rAmelio").value = r.ameliorations || "";
+  buildEvals(currentSession);
+  setMTab("bilan");
+  $("overlay").classList.add("show");
+}
+$("modalCancel").onclick = () => $("overlay").classList.remove("show");
+$("overlay").addEventListener("click", e => { if (e.target === $("overlay")) $("overlay").classList.remove("show"); });
+
+$("modalSave").onclick = async () => {
+  if (!currentSession) return;
+  const btn = $("modalSave"); btn.disabled = true; btn.textContent = "Enregistrement…";
+  // Collecte des évaluations formateur saisies
+  const evaluations = [...document.querySelectorAll("#evList .ev-card[data-eid]")].map(card => {
+    const raw = card.querySelector("input").value.trim();
+    const commentaire = card.querySelector("textarea").value.trim();
+    const scoreFormateur = raw === "" ? null : Math.min(100, Math.max(0, parseFloat(raw))) / 100;
+    return { evalRecId: card.dataset.eid, scoreFormateur, commentaire };
+  }).filter(ev => ev.scoreFormateur != null || ev.commentaire !== "");
+  try {
+    const r = await fetch("/api/rapport", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        key: localStorage.getItem("dashKey"),
+        sessionId: currentSession.id,
+        deroule: $("rDeroule").value.trim(),
+        pointsForts: $("rForts").value.trim(),
+        difficultes: $("rDiff").value.trim(),
+        ameliorations: $("rAmelio").value.trim(),
+        evaluations,
+      }),
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error || "Erreur");
+    // Mise à jour locale des évaluations
+    for (const ev of evaluations) {
+      const p = currentSession.participants.find(x => x.evalRecId === ev.evalRecId);
+      if (p) {
+        if (ev.scoreFormateur != null) p.scoreFormateur = ev.scoreFormateur;
+        p.commentaireFormateur = ev.commentaire;
+      }
+    }
+    // Mise à jour locale du rapport (uniquement s'il est renseigné)
+    const hasRapport = [$("rDeroule"), $("rForts"), $("rDiff"), $("rAmelio")].some(el => el.value.trim());
+    if (hasRapport) {
+      currentSession.rapport = {
+        complete: true, date: new Date().toISOString(),
+        deroule: $("rDeroule").value.trim(), pointsForts: $("rForts").value.trim(),
+        difficultes: $("rDiff").value.trim(), ameliorations: $("rAmelio").value.trim(),
+      };
+    }
+    $("overlay").classList.remove("show");
+    renderList();
+    toast("Enregistré ✓");
+  } catch (ex) {
+    toast("Erreur : " + ex.message);
+  } finally {
+    btn.disabled = false; btn.textContent = "Enregistrer";
+  }
+};
+
+/* ── Vue Mois ── */
+function sessionDays(s) {
+  if (!s.dateDebut) return [];
+  const out = []; const d = new Date(s.dateDebut + "T12:00");
+  let left = s.jours || 1;
+  while (left > 0) { const w = d.getDay(); if (w !== 0 && w !== 6) { out.push(d.toISOString().slice(0, 10)); left--; } d.setDate(d.getDate() + 1); }
+  return out;
+}
+function renderMonth() {
+  const y = cursor.getFullYear(), m = cursor.getMonth();
+  $("monthLabel").textContent = cursor.toLocaleDateString("fr-FR", {month: "long", year: "numeric"});
+  const box = $("monthView"); box.innerHTML = "";
+  const cal = document.createElement("div"); cal.className = "cal";
+  ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"].forEach(d => {
+    cal.insertAdjacentHTML("beforeend", `<div class="dow">${d}</div>`);
+  });
+  const byDay = {};
+  for (const s of (DATA?.sessions || [])) for (const day of sessionDays(s)) (byDay[day] = byDay[day] || []).push(s);
+  const first = new Date(y, m, 1);
+  const offset = (first.getDay() + 6) % 7;
+  const start = new Date(y, m, 1 - offset);
+  const todayISO = new Date().toISOString().slice(0, 10);
+  for (let i = 0; i < 42; i++) {
+    const d = new Date(start); d.setDate(start.getDate() + i);
+    const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    const out = d.getMonth() !== m;
+    const evts = (byDay[iso] || []).map(s =>
+      `<div class="evt ${s.type || "INTER"} st-${(s.statut || "").replace(/\s/g, "")}" data-id="${s.id}">
+        <span class="t">${esc(s.titre) || "Session"}</span><span class="l">${esc(s.lieu || s.modalite || s.type || "")}</span></div>`).join("");
+    cal.insertAdjacentHTML("beforeend",
+      `<div class="cell ${out ? "out" : ""} ${iso === todayISO ? "today" : ""}"><div class="dnum">${d.getDate()}</div>${evts}</div>`);
+  }
+  box.appendChild(cal);
+  box.querySelectorAll(".evt").forEach(e => e.onclick = () => {
+    $("statusFilter").value = "toutes";
+    setView("list"); renderList();
+    const el = document.getElementById("sess-" + e.dataset.id.replace(/-/g, ""));
+    if (el) el.scrollIntoView({behavior: "smooth"});
+  });
+}
+</script>
+</body>
+</html>
