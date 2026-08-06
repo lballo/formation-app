@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Résultats de l'évaluation • Laura Ballo Formation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+:root{--black:#1A1A1A;--white:#FFF;--light-beige:#FBF4EE;--warm-beige:#E8DDD6;--warm-gray:#6B6560;
+--text-dark:#2C2C2C;--accent:#C4A574;--accent-dark:#A68B5B;--success:#7BA05B;--alert:#B8534A;
+--font-h:'DM Serif Display',Georgia,serif;--font-b:'DM Sans',system-ui,sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-b);background:var(--light-beige);color:var(--text-dark);line-height:1.6;min-height:100vh}
+.hero{background:linear-gradient(135deg,var(--black),#2a2a2a);color:var(--white);padding:36px 20px 28px}
+.hero-inner{max-width:760px;margin:0 auto}
+.hero .badge{display:inline-block;background:var(--accent);color:var(--black);font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;padding:5px 12px;border-radius:4px;margin-bottom:14px}
+.hero h1{font-family:var(--font-h);font-weight:400;font-size:1.6rem;line-height:1.25}
+.hero p{color:var(--warm-beige);margin-top:8px;font-size:.92rem}
+.wrap{max-width:760px;margin:0 auto;padding:26px 20px 70px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+.btn{display:inline-flex;align-items:center;gap:8px;border:none;border-radius:10px;padding:13px 22px;
+font-family:var(--font-b);font-size:.92rem;font-weight:600;cursor:pointer;transition:.25s;text-decoration:none}
+.btn.primary{background:var(--black);color:#fff}
+.btn.primary:hover{background:var(--accent-dark)}
+.btn.primary[disabled]{opacity:.55;cursor:wait}
+.btn.soft{background:transparent;color:var(--text-dark);border:1px solid var(--warm-beige)}
+.btn.soft:hover{border-color:var(--accent);color:var(--accent-dark)}
+.msg{max-width:560px;margin:16vh auto;text-align:center;padding:0 20px}
+.msg .ico{font-size:2.2rem;margin-bottom:10px}
+.msg h1{font-family:var(--font-h);font-weight:400;font-size:1.5rem;margin-bottom:8px}
+.msg p{color:var(--warm-gray)}
+.msg a{color:var(--accent-dark)}
+
+/* ── Document exporté ── */
+#doc{background:var(--white);border:1px solid var(--warm-beige);border-radius:14px;padding:34px 36px}
+.doc-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;border-bottom:2px solid var(--black);padding-bottom:16px;margin-bottom:20px}
+.doc-brand{font-family:var(--font-h);font-size:1.3rem;line-height:1.2}
+.doc-brand small{display:block;font-family:var(--font-b);font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--accent-dark);margin-top:3px}
+.doc-title{text-align:right}
+.doc-title .t{font-weight:700;font-size:.95rem}
+.doc-title .d{font-size:.78rem;color:var(--warm-gray)}
+.meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 24px;margin-bottom:22px}
+.meta-row{font-size:.86rem}
+.meta-row .lbl{display:block;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--warm-gray)}
+.scores{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px}
+.score{border:1px solid var(--warm-beige);border-radius:12px;padding:14px;text-align:center}
+.score .v{font-family:var(--font-h);font-size:1.7rem;line-height:1.2}
+.score .l{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--warm-gray);margin-top:2px}
+.score.total{background:var(--black);color:#fff;border-color:var(--black)}
+.score.total .v{color:var(--accent)}
+.score.total .l{color:rgba(255,255,255,.7)}
+.score .v.pending{font-family:var(--font-b);font-size:.85rem;font-weight:600;color:var(--warm-gray);padding:8px 0}
+h2.sec{font-family:var(--font-h);font-weight:400;font-size:1.15rem;margin:22px 0 10px}
+.comment{background:var(--light-beige);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:12px 16px;font-size:.88rem;margin-bottom:6px}
+.rescard{border:1px solid var(--warm-beige);border-radius:12px;padding:13px 16px;margin-bottom:9px;page-break-inside:avoid;break-inside:avoid}
+.rescard.ok{border-left:4px solid var(--success)}
+.rescard.ko{border-left:4px solid var(--alert)}
+.rescard .q{font-weight:600;font-size:.88rem;margin-bottom:5px}
+.rescard .a{font-size:.82rem;color:var(--warm-gray)}
+.rescard .a b{color:var(--text-dark)}
+.rescard .mark{float:right;font-size:.78rem;font-weight:700}
+.rescard.ok .mark{color:var(--success)}
+.rescard.ko .mark{color:var(--alert)}
+.resume-fallback{white-space:pre-wrap;font-size:.84rem;background:var(--light-beige);border-radius:10px;padding:14px 16px}
+.doc-foot{border-top:1px solid var(--warm-beige);margin-top:24px;padding-top:12px;font-size:.7rem;color:var(--warm-gray);line-height:1.5}
+
+@media print{
+  body{background:#fff}
+  .hero,.actions{display:none!important}
+  .wrap{max-width:none;padding:0}
+  #doc{border:none;border-radius:0;padding:0}
+}
+@media(max-width:560px){
+  #doc{padding:22px 18px}
+  .meta-grid,.scores{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="msg" id="loading"><h1>Chargement…</h1><p>Préparation des résultats.</p></div>
+<div class="msg" id="errorBox" style="display:none"><div class="ico">🔒</div><h1>Lien invalide</h1>
+  <p>Ce lien n'est pas reconnu. Contactez votre formatrice : contact@lauraballo.com</p></div>
+<div class="msg" id="pendingBox" style="display:none"><div class="ico">⏳</div><h1>Évaluation non complétée</h1>
+  <p>Les résultats seront disponibles ici dès que l'évaluation aura été transmise.<br>
+  <a id="quizLink" href="#">Accéder au questionnaire →</a></p></div>
+
+<div id="app" style="display:none">
+  <header class="hero"><div class="hero-inner">
+    <span class="badge">Résultats</span>
+    <h1>Évaluation de fin de formation</h1>
+    <p id="intro">—</p>
+  </div></header>
+
+  <main class="wrap">
+    <div class="actions">
+      <button class="btn primary" id="btnPdf">⬇︎&nbsp; Télécharger le PDF</button>
+      <button class="btn soft" id="btnPrint">Imprimer</button>
+    </div>
+
+    <div id="doc">
+      <div class="doc-head">
+        <div class="doc-brand">Laura Ballo<small>Formation certifiée Qualiopi</small></div>
+        <div class="doc-title">
+          <div class="t">Évaluation des acquis</div>
+          <div class="d">Fin de formation — indicateur 11</div>
+        </div>
+      </div>
+
+      <div class="meta-grid">
+        <div class="meta-row"><span class="lbl">Participant·e</span><span id="mNom">—</span></div>
+        <div class="meta-row"><span class="lbl">Formation</span><span id="mFormation">—</span></div>
+        <div class="meta-row"><span class="lbl">Session</span><span id="mSession">—</span></div>
+        <div class="meta-row"><span class="lbl">Évaluation transmise le</span><span id="mDate">—</span></div>
+      </div>
+
+      <div class="scores">
+        <div class="score"><div class="v" id="sEcrit">—</div><div class="l">Écrit (70&nbsp;%)</div></div>
+        <div class="score"><div class="v" id="sFormateur">—</div><div class="l">Formateur (30&nbsp;%)</div></div>
+        <div class="score total"><div class="v" id="sTotal">—</div><div class="l">Note finale</div></div>
+      </div>
+
+      <div id="commentBlock" style="display:none">
+        <h2 class="sec">Observations du formateur</h2>
+        <div class="comment" id="commentText"></div>
+      </div>
+
+      <h2 class="sec">Détail des réponses</h2>
+      <div id="corrections"></div>
+
+      <div class="doc-foot">
+        Document généré depuis l'espace formation — Laura Ballo Coaching, organisme de formation certifié Qualiopi.
+        Évaluation de l'atteinte des objectifs pédagogiques (référentiel national qualité, indicateur 11).
+        Correction automatisée des réponses écrites ; appréciation orale et implication évaluées par le formateur.
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+const token = new URLSearchParams(location.search).get("token");
+const $ = id => document.getElementById(id);
+const pct = v => v == null ? null : Math.round(v * 100) + " %";
+const fmtDate = iso => iso ? new Date(iso).toLocaleDateString("fr-FR", {day:"numeric", month:"long", year:"numeric"}) : "—";
+const esc = s => String(s || "").replace(/</g, "&lt;");
+const show = id => ["loading","errorBox","pendingBox","app"].forEach(x => $(x).style.display = x===id ? "block" : "none");
+
+let NOM = "";
+
+async function load(){
+  if(!token) return show("errorBox");
+  let d;
+  try{
+    const r = await fetch(`/api/evaluation?token=${encodeURIComponent(token)}&mode=resultats`);
+    d = await r.json();
+    if(!r.ok){
+      if(d && d.nonComplete){ $("quizLink").href = `/evaluation/?token=${token}`; return show("pendingBox"); }
+      return show("errorBox");
+    }
+  }catch(e){ return show("errorBox"); }
+
+  const ev = d.evaluation || {};
+  NOM = d.participant.nom || "";
+  $("intro").textContent = `${NOM}${d.formation ? " — " + d.formation : ""}`;
+  $("mNom").textContent = NOM || "—";
+  $("mFormation").textContent = d.formation || "—";
+  $("mSession").textContent = d.session
+    ? [d.session.code, d.session.dateDebut ? fmtDate(d.session.dateDebut) + (d.session.dateFin && d.session.dateFin !== d.session.dateDebut ? " → " + fmtDate(d.session.dateFin) : "") : ""].filter(Boolean).join(" • ") || "—"
+    : "—";
+  $("mDate").textContent = fmtDate(ev.dateSoumission);
+
+  $("sEcrit").textContent = pct(ev.scoreEcrit) ?? "—";
+  if(ev.scoreFormateur == null){
+    $("sFormateur").textContent = "En attente"; $("sFormateur").classList.add("pending");
+    $("sTotal").textContent = "En attente"; $("sTotal").classList.add("pending");
+  } else {
+    $("sFormateur").textContent = pct(ev.scoreFormateur);
+    $("sTotal").textContent = pct(ev.scoreTotal) ?? "—";
+  }
+
+  if(ev.commentaireFormateur){
+    $("commentBlock").style.display = "block";
+    $("commentText").textContent = ev.commentaireFormateur;
+  }
+
+  const box = $("corrections");
+  if(Array.isArray(ev.details) && ev.details.length){
+    box.innerHTML = ev.details.map((r, i) => `
+      <div class="rescard ${r.correct ? "ok" : "ko"}">
+        <span class="mark">${r.correct ? "✓ Correct" : "✗ Incorrect"}</span>
+        <div class="q">Q${i+1}. ${esc(r.question)}</div>
+        <div class="a">Réponse donnée : <b>${esc(r.choix) || "(sans réponse)"}</b>${r.correct ? "" : `<br>Bonne réponse : <b>${esc(r.bonneReponse)}</b>`}</div>
+      </div>`).join("");
+  } else if(ev.resume){
+    box.innerHTML = `<div class="resume-fallback">${esc(ev.resume)}</div>`;
+  } else {
+    box.innerHTML = `<div class="resume-fallback">Détail des réponses indisponible pour cette évaluation.</div>`;
+  }
+
+  show("app");
+}
+
+$("btnPrint").onclick = () => window.print();
+$("btnPdf").onclick = async () => {
+  const btn = $("btnPdf");
+  btn.disabled = true; btn.textContent = "Génération…";
+  const slug = (NOM || "participant").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-zA-Z0-9]+/g,"-").replace(/^-|-$/g,"");
+  try{
+    await html2pdf().set({
+      margin: [12, 12, 14, 12],
+      filename: `evaluation-${slug}.pdf`,
+      image: { type: "jpeg", quality: 0.96 },
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+      pagebreak: { mode: ["css", "avoid-all"] },
+    }).from($("doc")).save();
+  }catch(e){ window.print(); }
+  btn.disabled = false; btn.innerHTML = "⬇︎&nbsp; Télécharger le PDF";
+};
+
+load();
+</script>
+</body>
+</html>
